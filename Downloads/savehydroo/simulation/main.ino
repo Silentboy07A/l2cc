@@ -2,14 +2,12 @@
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 
-
 // WIFI
 const char *ssid = "Wokwi-GUEST";
 const char *password = "";
 
-// EDGE FUNCTION
-const char *FUNCTION_URL =
-    "https://jawdhtalovhqoorwfrkt.supabase.co/functions/v1/sensor_ingest";
+// EDGE FUNCTION - Using Vercel API (secure, validates before DB)
+const char *FUNCTION_URL = "https://haloo.vercel.app/api/sensor-data";
 
 // TDS SENSORS (Potentiometers)
 #define TDS1 34
