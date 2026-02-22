@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L2C — Restaurants Near You</title>
+    <meta name="description"
+        content="Browse restaurants near you. Filter by cuisine, delivery time, rating, and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ── Design Tokens ─────────────────────────────────────────────────── */
+        :root {
+            --primary: #ef4f5f;
+            --primary-dark: #d43f4f;
+            --primary-light: #ffedef;
+            --dark: #293142;
+            --gray: #62626a;
+            --light-gray: #f4f4f5;
+            --border: #e6e9ef;
+            --white: #ffffff;
+            --bg: #f8f8f8;
+            --font: 'Lexend', sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 24px;
+            --r-pill: 9999px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.07);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--dark);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font);
+            border: none;
+            outline: none;
+        }
+
+        /* ── Navbar ─────────────────────────────────────────────────────────── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 0.8px solid var(--border);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-location {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray);
+            background: var(--light-gray);
+            border-radius: var(--r-pill);
+            padding: 7px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-location:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            padding: 9px 22px;
+            border-radius: var(--r-pill);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            transition: all 0.25s;
+            box-shadow: 0 2px 8px rgba(239, 79, 95, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        /* ── Hero Bar ───────────────────────────────────────────────────────── */
+        .hero-bar {
+            background: linear-gradient(135deg, var(--dark) 0%, #1a2035 100%);
+            padding: 32px 40px;
+        }
+
+        .hero-bar h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .hero-bar p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 20px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            max-width: 680px;
+        }
+
+        .search-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-radius: var(--r-md);
+            padding: 10px 16px;
+        }
+
+        .search-wrap input {
+            border: none;
+            outline: none;
+            font-family: var(--font);
+            font-size: 14px;
+            width: 100%;
+            background: transparent;
+        }
+
+        .search-wrap input::placeholder {
+            color: var(--gray);
+        }
+
+        .btn-search {
+            padding: 12px 24px;
+            border-radius: var(--r-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .btn-search:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ── Layout ─────────────────────────────────────────────────────────── */
+        .page-body {
+            display: flex;
+            gap: 0;
+            min-height: calc(100vh - 180px);
+        }
+
+        /* ── Sidebar Filters ────────────────────────────────────────────────── */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            background: var(--white);
+            border-right: 0.8px solid var(--border);
+            padding: 28px 24px;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            margin-bottom: 28px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .filter-clear {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            padding: 6px 14px;
+            border-radius: var(--r-pill);
+            font-size: 12px;
+            font-weight: 500;
+            border: 1.5px solid var(--border);
+            background: var(--white);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .chip.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .range-slider {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 6px;
+        }
+
+        .filter-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .filter-check input {
+            accent-color: var(--primary);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .filter-check span {
+            font-size: 13px;
+            color: var(--dark);
+        }
+
+        .btn-apply {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--r-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-apply:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ── Main Content ───────────────────────────────────────────────────── */
+        .main {
+            flex: 1;
+            padding: 28px 32px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-count {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .results-count span {
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .sort-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sort-label {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .sort-select {
+            padding: 8px 14px;
+            border-radius: var(--r-md);
+            border: 0.8px solid var(--border);
+            background: white;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Quick filters row */
+        .quick-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .qchip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--r-pill);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .qchip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .qchip.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* ── Restaurant Grid ─────────────────────────────────────────────────── */
+        .rest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .rest-card {
+            background: white;
+            border-radius: var(--r-lg);
+            border: 0.8px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rest-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .card-img-wrap {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+        }
+
+        .card-img-bg {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+            transition: transform 0.4s;
+        }
+
+        .rest-card:hover .card-img-bg {
+            transform: scale(1.06);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: white;
+            border-radius: var(--r-pill);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-red {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card-offer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            padding: 24px 14px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .card-body {
+            padding: 14px 16px;
+        }
+
+        .card-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-cuisine {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border-top: 0.8px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .meta-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .meta-item:not(:last-child) {
+            border-right: 0.8px solid var(--border);
+        }
+
+        .meta-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .meta-val.green {
+            color: #1ba672;
+        }
+
+        .meta-key {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 1px;
+        }
+
+        /* ── Skeleton loader ─────────────────────────────────────────────── */
+        .skeleton {
+            animation: shimmer 1.4s infinite;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            border-radius: var(--r-sm);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ── Pagination ──────────────────────────────────────────────────── */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .page-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* ── Empty state ─────────────────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-emoji {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .empty-sub {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        /* ── Responsive ──────────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-bar {
+                padding: 24px 16px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                padding: 20px 16px;
+            }
+
+            .rest-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .rest-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-favorite {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            z-index: 10;
+            user-select: none;
+        }
+
+        .card-favorite.active {
+            color: #ef4f5f;
+            background: white;
+            box-shadow: 0 4px 12px rgba(239, 79, 95, 0.2);
+        }
+
+        .card-favorite:hover {
+            transform: scale(1.1);
+        }
+    </style>
+    <script src="common.js"></script>
+</head>
+
+<body>
+
+    <!-- ── Navbar ───────────────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">🍜</div>
+            <span class="logo-text">L<span>2</span>C</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="restaurants.html" class="active">Restaurants</a></li>
+            <li><a href="favorites.html">Favorites</a></li>
+            <li><a href="orders.html">Orders</a></li>
+            <li><a href="tracking.html">Track Order</a></li>
+            <li>
+                <a href="cart.html" style="position:relative;display:inline-flex;align-items:center;gap:6px;">
+                    🛒 Cart
+                    <span id="nav-cart-badge"
+                        style="display:none;background:var(--primary);color:white;border-radius:9999px;font-size:10px;font-weight:700;padding:1px 6px;line-height:1.6;">0</span>
+                </a>
+            </li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <button class="btn-primary" onclick="window.location.href='login.html'">Sign In</button>
+        </div>
+    </nav>
+
+    <!-- ── Hero Search Bar ───────────────────────────────────────────────── -->
+    <div class="hero-bar">
+        <h1>Restaurants Near You</h1>
+        <p>Showing 124 restaurants delivering to Koramangala, Bangalore</p>
+        <div class="search-row">
+            <div class="search-wrap">
+                <span>🔍</span>
+                <input type="text" id="rest-search" placeholder="Search for restaurants or cuisines..."
+                    oninput="filterRestaurants()" />
+            </div>
+            <button class="btn-search" onclick="filterRestaurants()">Search</button>
+        </div>
+    </div>
+
+    <!-- ── Page Body ─────────────────────────────────────────────────────── -->
+    <div class="page-body">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Filters</div>
+
+            <div class="filter-group">
+                <div class="filter-label">
+                    Delivery Time
+                    <span class="filter-clear" onclick="clearFilter('time')">Clear</span>
+                </div>
+                <div class="filter-chips" id="time-filters">
+                    <div class="chip active" onclick="toggleChip(this,'time')" data-val="20">⚡ &lt;20 min</div>
+                    <div class="chip" onclick="toggleChip(this,'time')" data-val="30">🕐 &lt;30 min</div>
+                    <div class="chip" onclick="toggleChip(this,'time')" data-val="45">⏱ &lt;45 min</div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Rating</div>
+                <div class="filter-chips" id="rating-filters">
+                    <div class="chip" onclick="toggleChip(this,'rating')" data-val="4.5">⭐ 4.5+</div>
+                    <div class="chip" onclick="toggleChip(this,'rating')" data-val="4.0">⭐ 4.0+</div>
+                    <div class="chip" onclick="toggleChip(this,'rating')" data-val="3.5">⭐ 3.5+</div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Cuisine</div>
+                <div class="filter-chips" id="cuisine-filters">
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Pizza">🍕 Pizza</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Biryani">🍛 Biryani</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Burgers">🍔 Burgers</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Sushi">🍣 Sushi</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Chinese">🥡 Chinese</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Desserts">🍰 Desserts</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="Healthy">🥗 Healthy</div>
+                    <div class="chip" onclick="toggleChip(this,'cuisine')" data-val="South Indian">🍲 South Indian</div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Price Range</div>
+                <input type="range" class="range-slider" id="price-range" min="0" max="1500" value="1500" step="50"
+                    oninput="updatePriceLabel(this.value)" />
+                <div class="range-labels"><span>₹0</span><span id="price-label">Up to ₹1500</span></div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-label">Preferences</div>
+                <label class="filter-check"><input type="checkbox" id="veg-only"
+                        onchange="filterRestaurants()" /><span>🟢 Pure Veg Only</span></label>
+                <label class="filter-check"><input type="checkbox" id="top-rated"
+                        onchange="filterRestaurants()" /><span>🏆 Top Rated (4.5+)</span></label>
+                <label class="filter-check"><input type="checkbox" id="offers-only"
+                        onchange="filterRestaurants()" /><span>🏷️ Offers Available</span></label>
+            </div>
+
+            <button class="btn-apply" onclick="filterRestaurants()">Apply Filters</button>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <div class="results-header">
+                <div class="results-count" id="result-count">Showing <strong>12</strong> restaurants <span>near
+                        Koramangala</span></div>
+                <div class="sort-wrap">
+                    <span class="sort-label">Sort by:</span>
+                    <select class="sort-select" id="sort-select" onchange="sortRestaurants()">
+                        <option value="relevance">Relevance</option>
+                        <option value="rating">Rating ↓</option>
+                        <option value="delivery">Delivery Time ↑</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Filters -->
+            <div class="quick-filters">
+                <div class="qchip active" onclick="toggleQChip(this,'all')" id="qchip-all">🍽️ All</div>
+                <div class="qchip" onclick="toggleQChip(this,'lazy')">⚡ Lazy Level &lt;20min</div>
+                <div class="qchip" onclick="toggleQChip(this,'offers')">🏷️ Offers</div>
+                <div class="qchip" onclick="toggleQChip(this,'newline')">✨ New</div>
+                <div class="qchip" onclick="toggleQChip(this,'top')">🏆 Top Rated</div>
+            </div>
+
+            <!-- Grid -->
+            <div class="rest-grid" id="rest-grid"></div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="page-btn">‹</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">›</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let restaurants = [];
+
+        window.addEventListener('l2c_ready', () => {
+            restaurants = L2C.restaurants;
+            filterRestaurants();
+        });
+
+        // If already ready (unlikely but safe)
+        if (L2C.restaurants && L2C.restaurants.length > 0) {
+            restaurants = L2C.restaurants;
+        }
+
+        let activeFilters = { time: ['20'], rating: [], cuisine: [], quick: 'all' };
+
+        function renderCards(data) {
+            const grid = document.getElementById('rest-grid');
+            if (!data.length) {
+                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-emoji">🍽️</div><div class="empty-title">No restaurants found</div><div class="empty-sub">Try adjusting your filters or search term.</div></div>`;
+                document.getElementById('result-count').innerHTML = `Showing <strong>0</strong> restaurants`;
+                return;
+            }
+            grid.innerHTML = data.map(r => `
+        <div class="rest-card" id="card-${r.id}">
+          <div class="card-img-wrap" onclick="viewRestaurant(${r.id})">
+            <div class="card-img-bg" style="background:${r.bg}">${r.emoji}</div>
+            ${r.tag ? `<div class="card-badge ${r.tag.includes('Fast') || r.tag.includes('⚡') ? 'badge-red' : ''}">${r.tag}</div>` : ''}
+            ${r.offer ? `<div class="card-offer">🏷️ ${r.offer}</div>` : ''}
+          </div>
+          <div class="card-favorite ${L2C.getFavorites().includes(r.id) ? 'active' : ''}" onclick="event.stopPropagation(); toggleFav(this, ${r.id})">
+            ${L2C.getFavorites().includes(r.id) ? '❤️' : '🤍'}
+          </div>
+          <div class="card-body" onclick="viewRestaurant(${r.id})">
+          <div class="card-name">${r.name}</div>
+          <div class="card-cuisine">${r.cuisine}</div>
+          <div class="card-meta">
+            <div class="meta-item">
+              <div class="meta-val green">★ ${r.rating}</div>
+              <div class="meta-key">Rating</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-val">${r.time} min</div>
+              <div class="meta-key">Delivery</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-val">₹${r.price}</div>
+              <div class="meta-key">For two</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+            document.getElementById('result-count').innerHTML = `Showing <strong>${data.length}</strong> restaurants <span>near Koramangala</span>`;
+        }
+
+        function filterRestaurants() {
+            const query = document.getElementById('rest-search').value.toLowerCase();
+            const vegOnly = document.getElementById('veg-only').checked;
+            const topRated = document.getElementById('top-rated').checked;
+            const offersOnly = document.getElementById('offers-only').checked;
+            const maxTime = activeFilters.time.length ? Math.max(...activeFilters.time.map(Number)) : 999;
+            const minRating = activeFilters.rating.length ? Math.min(...activeFilters.rating.map(Number)) : 0;
+            const cuisines = activeFilters.cuisine;
+
+            let data = restaurants.filter(r => {
+                if (query && !r.name.toLowerCase().includes(query) && !r.cuisine.toLowerCase().includes(query)) return false;
+                if (vegOnly && !r.isVeg) return false;
+                if (topRated && r.rating < 4.5) return false;
+                if (offersOnly && !r.offer) return false;
+                if (r.time > maxTime) return false;
+                if (r.rating < minRating) return false;
+                if (cuisines.length && !cuisines.some(c => r.cuisine.includes(c))) return false;
+                if (activeFilters.quick === 'lazy' && r.time >= 20) return false;
+                if (activeFilters.quick === 'offers' && !r.offer) return false;
+                if (activeFilters.quick === 'newline' && !r.isNew) return false;
+                if (activeFilters.quick === 'top' && r.rating < 4.7) return false;
+                return true;
+            });
+
+            sortData(data);
+        }
+
+        function sortData(data) {
+            const sort = document.getElementById('sort-select').value;
+            if (sort === 'rating') data.sort((a, b) => b.rating - a.rating);
+            else if (sort === 'delivery') data.sort((a, b) => a.time - b.time);
+            else if (sort === 'price_low') data.sort((a, b) => a.price - b.price);
+            else if (sort === 'price_high') data.sort((a, b) => b.price - a.price);
+            renderCards(data);
+        }
+
+        function sortRestaurants() { filterRestaurants(); }
+
+        function toggleChip(el, group) {
+            const val = el.dataset.val;
+            const idx = activeFilters[group].indexOf(val);
+            if (idx > -1) { activeFilters[group].splice(idx, 1); el.classList.remove('active'); }
+            else { activeFilters[group].push(val); el.classList.add('active'); }
+            filterRestaurants();
+        }
+
+        function clearFilter(group) {
+            activeFilters[group] = [];
+            document.querySelectorAll(`#${group}-filters .chip`).forEach(c => c.classList.remove('active'));
+            filterRestaurants();
+        }
+
+        function toggleQChip(el, val) {
+            document.querySelectorAll('.qchip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            activeFilters.quick = val;
+            filterRestaurants();
+        }
+
+        function updatePriceLabel(val) {
+            document.getElementById('price-label').textContent = val >= 1500 ? 'Any price' : `Up to ₹${val}`;
+            filterRestaurants();
+        }
+
+        function toggleFav(el, id) {
+            const isAdded = L2C.toggleFavorite(id);
+            el.classList.toggle('active', isAdded);
+            el.innerHTML = isAdded ? '❤️' : '🤍';
+            if (isAdded) L2C.showToast(`Added to favorites!`, 'success');
+        }
+
+        function viewRestaurant(id) {
+            const r = restaurants.find(x => x.id === id);
+            if (!r) return;
+            window.location.href = `restaurant.html?id=${r.id}&name=${encodeURIComponent(r.name)}&cuisine=${encodeURIComponent(r.cuisine)}`;
+        }
+
+        // ── Live Cart Badge ────────────────────────────────────────────────
+        function updateCartBadge() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('l2c_cart') || '{}');
+                const qty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+                const badge = document.getElementById('nav-cart-badge');
+                if (badge) {
+                    badge.style.display = qty > 0 ? 'inline' : 'none';
+                    badge.textContent = qty;
+                }
+            } catch (e) { }
+        }
+        updateCartBadge();
+        window.addEventListener('storage', updateCartBadge);
+
+        function changeLocation() {
+            const loc = prompt('Enter your delivery location:');
+            if (loc) document.getElementById('loc-text').textContent = loc;
+        }
+
+        // Init
+        renderCards(restaurants);
+    </script>
+</body>
+
+</html>

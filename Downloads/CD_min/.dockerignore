@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+Dockerfile
+.dockerignore
+README.md
+prdcd.docx
+l2ctecstackk.docx
+output
+prdcd_extracted
+C:\Users\csbal\.gemini\antigravity\brain
+C:\Users\csbal\.gemini\antigravity\brain\*

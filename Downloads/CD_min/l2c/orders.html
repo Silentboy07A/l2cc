@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Orders | L2C</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #ef4f5f;
+            --primary-dark: #d43f4f;
+            --primary-light: #ffedef;
+            --dark: #293142;
+            --gray: #62626a;
+            --border: #e6e9ef;
+            --light-gray: #f4f4f5;
+            --white: #ffffff;
+            --green: #1ba672;
+            --font: 'Lexend', sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 20px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light-gray);
+            color: var(--dark);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font);
+            border: none;
+            outline: none;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: .8px solid var(--border);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            transition: color .2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        /* Page Layout */
+        .page-header {
+            background: white;
+            border-bottom: .8px solid var(--border);
+            padding: 24px 40px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .page-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        /* Order Cards */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: var(--r-lg);
+            border: .8px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform .2s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .order-header {
+            padding: 20px 24px;
+            border-bottom: .8px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .order-date {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-preparing {
+            background: #fff8e8;
+            color: #8a6400;
+        }
+
+        .status-delivered {
+            background: #e8fdf4;
+            color: var(--green);
+        }
+
+        .order-body {
+            padding: 20px 24px;
+        }
+
+        .order-items {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .order-footer {
+            padding: 16px 24px;
+            background: #fafafa;
+            border-top: .8px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-total {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .btn-reorder {
+            padding: 8px 16px;
+            border-radius: var(--r-sm);
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: .3;
+        }
+
+        .btn-browse {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 99px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .page-header,
+            .page-wrap {
+                padding: 16px;
+            }
+        }
+    </style>
+    <script src="common.js"></script>
+    <script>L2C.requireAuth();</script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">🍽️</div>
+            <div class="logo-text">L<span>2</span>C</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="restaurants.html">Restaurants</a></li>
+            <li><a href="favorites.html">Favorites</a></li>
+            <li><a href="orders.html" class="active">Orders</a></li>
+            <li><a href="tracking.html">Track Order</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <button class="btn-primary" onclick="window.location.href='login.html'">Sign In</button>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="page-title">Your Orders 🗒️</div>
+    </div>
+
+    <div class="page-wrap">
+        <div id="orders-container" class="orders-list">
+            <!-- Orders will be rendered here -->
+        </div>
+
+        <div id="empty-state" class="empty-state" style="display:none;">
+            <div class="empty-icon">🍔</div>
+            <h3>No orders yet!</h3>
+            <p>Hungry? Order some delicious food now.</p>
+            <a href="restaurants.html" class="btn-browse">Browse Restaurants</a>
+        </div>
+    </div>
+
+    <script>
+        function renderOrders() {
+            const container = document.getElementById('orders-container');
+            const emptyState = document.getElementById('empty-state');
+            const history = JSON.parse(localStorage.getItem('l2c_orders_history') || '[]');
+
+            if (history.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.innerHTML = history.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-info">
+                            <h3>${order.restaurant}</h3>
+                            <div class="order-date">${new Date(order.placedAt).toLocaleString()} • ID: ${order.orderId}</div>
+                        </div>
+                        <span class="order-status status-${order.status?.toLowerCase() || 'preparing'}">
+                            ${order.status || 'Preparing'}
+                        </span>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-items">
+                            ${order.items.map(it => `${it.qty} x ${it.name}`).join('<br>')}
+                        </div>
+                    </div>
+                    <div class="order-footer">
+                        <div class="order-total">Total: ₹${order.total}</div>
+                        <button class="btn-reorder" onclick="window.location.href='tracking.html'">Track Order</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        renderOrders();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L2C — Sign In</title>
+    <meta name="description" content="Sign in or create your L2C account for hyper-fast food delivery." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #ef4f5f;
+            --primary-dark: #d43f4f;
+            --primary-light: #ffedef;
+            --dark: #293142;
+            --gray: #62626a;
+            --border: #e6e9ef;
+            --light-gray: #f4f4f5;
+            --white: #ffffff;
+            --font: 'Lexend', sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 16px;
+            --r-pill: 9999px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light-gray);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font);
+            border: none;
+            outline: none;
+        }
+
+        input {
+            font-family: var(--font);
+        }
+
+        /* ── Left Panel ─────────────────────────────────────────────────────── */
+        .left-panel {
+            width: 45%;
+            background: linear-gradient(145deg, var(--dark) 0%, #1a2035 60%, #0f1520 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(239, 79, 95, 0.18) 0%, transparent 70%);
+        }
+
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(239, 79, 95, 0.10) 0%, transparent 70%);
+        }
+
+        .panel-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        .panel-body {
+            z-index: 1;
+        }
+
+        .panel-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .panel-title span {
+            color: var(--primary);
+        }
+
+        .panel-sub {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .panel-perks {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .perk {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .perk-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(239, 79, 95, 0.15);
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            border: 1px solid rgba(239, 79, 95, 0.2);
+        }
+
+        .perk-text strong {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 2px;
+        }
+
+        .perk-text span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .panel-footer {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.25);
+            z-index: 1;
+        }
+
+        /* ── Right Panel ─────────────────────────────────────────────────────── */
+        .right-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+
+        /* Tabs */
+        .auth-tabs {
+            display: flex;
+            background: var(--light-gray);
+            border-radius: var(--r-pill);
+            padding: 4px;
+            margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: var(--r-pill);
+            font-size: 14px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--gray);
+            transition: all 0.25s;
+        }
+
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Form */
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-header {
+            margin-bottom: 28px;
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .form-sub {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .form-sub strong {
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 7px;
+            display: block;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-lg);
+            font-size: 14px;
+            color: var(--dark);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(239, 79, 95, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #e74c3c;
+        }
+
+        .form-input::placeholder {
+            color: #b0b0b0;
+        }
+
+        .show-pwd {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .error-msg {
+            font-size: 11px;
+            color: #e74c3c;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--primary);
+            margin-top: -10px;
+            margin-bottom: 18px;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        /* OTP input */
+        .otp-wrap {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .otp-input {
+            width: 48px;
+            height: 54px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            border: 1.5px solid var(--border);
+            border-radius: var(--r-md);
+            font-family: var(--font);
+            color: var(--dark);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .otp-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(239, 79, 95, 0.1);
+        }
+
+        /* Submit */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--r-pill);
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            background: var(--primary);
+            transition: all 0.25s;
+            box-shadow: 0 4px 14px rgba(239, 79, 95, 0.35);
+            margin-top: 4px;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(239, 79, 95, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        /* Social */
+        .social-btns {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-social {
+            flex: 1;
+            padding: 11px;
+            border-radius: var(--r-lg);
+            border: 1.5px solid var(--border);
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-social:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Terms */
+        .terms-note {
+            font-size: 11px;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .terms-note a {
+            color: var(--primary);
+        }
+
+        /* Success screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes pop {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .success-sub {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 24px;
+        }
+
+        .btn-continue {
+            padding: 13px 32px;
+            border-radius: var(--r-pill);
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            background: var(--primary);
+            transition: all 0.25s;
+            box-shadow: 0 4px 14px rgba(239, 79, 95, 0.35);
+        }
+
+        .btn-continue:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Phone step */
+        .phone-step {
+            display: none;
+        }
+
+        .phone-step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+        }
+
+        .phone-prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            padding-right: 10px;
+            border-right: 1.5px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .phone-input {
+            padding-left: 72px !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .left-panel {
+                display: none;
+            }
+
+            .right-panel {
+                padding: 24px 16px;
+            }
+
+            .auth-card {
+                padding: 28px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Left Panel ────────────────────────────────────────────────────── -->
+    <div class="left-panel">
+        <a href="index.html" class="panel-logo">
+            <div class="logo-icon">🍜</div>
+            <span class="logo-text">L<span>2</span>C</span>
+        </a>
+        <div class="panel-body">
+            <h1 class="panel-title">Your hunger,<br /><span>zero effort.</span></h1>
+            <p class="panel-sub">Join 500,000+ lazy legends who get premium food delivered in under 20 minutes.</p>
+            <div class="panel-perks">
+                <div class="perk">
+                    <div class="perk-icon">⚡</div>
+                    <div class="perk-text">
+                        <strong>Under 20-Minute Delivery</strong>
+                        <span>Geo-fenced restaurant selection — only the fastest near you</span>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">👆</div>
+                    <div class="perk-text">
+                        <strong>One-Tap Checkout</strong>
+                        <span>Saved addresses and payment methods ready to go</span>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">📍</div>
+                    <div class="perk-text">
+                        <strong>Live Order Tracking</strong>
+                        <span>Real-time GPS updates from kitchen to doorstep</span>
+                    </div>
+                </div>
+                <div class="perk">
+                    <div class="perk-icon">🎁</div>
+                    <div class="perk-text">
+                        <strong>₹100 Off First Order</strong>
+                        <span>Sign up now and use code LAZY100 at checkout</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">© 2025 L2C Technologies Pvt. Ltd. · Powered by Azure AD B2C</div>
+    </div>
+
+    <!-- ── Right Panel ───────────────────────────────────────────────────── -->
+    <div class="right-panel">
+        <div class="auth-card" id="auth-card">
+
+            <!-- Tabs -->
+            <div class="auth-tabs" id="auth-tabs">
+                <button class="tab-btn active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+                <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+            </div>
+
+            <!-- ── Sign In ─────────────────────────────────────────────────────── -->
+            <div class="form-section active" id="signin-form">
+                <div class="form-header">
+                    <div class="form-title">Welcome back 👋</div>
+                    <div class="form-sub">Don't have an account? <strong onclick="switchTab('signup')"
+                            style="cursor:pointer">Sign up free</strong></div>
+                </div>
+                <form onsubmit="handleSignIn(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrap">
+                            <span class="icon">✉️</span>
+                            <input class="form-input" type="email" id="si-email" placeholder="you@example.com"
+                                required />
+                        </div>
+                        <div class="error-msg" id="si-email-err">Please enter a valid email.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrap">
+                            <span class="icon">🔒</span>
+                            <input class="form-input" type="password" id="si-password" placeholder="Enter your password"
+                                required />
+                            <span class="show-pwd" onclick="togglePwd('si-password',this)">👁</span>
+                        </div>
+                        <div class="error-msg" id="si-pwd-err">Incorrect password. Try again.</div>
+                    </div>
+                    <a class="forgot-link" href="#" onclick="showPhoneOTP()">Forgot password?</a>
+                    <button type="submit" class="btn-submit" id="si-btn">Sign In →</button>
+                </form>
+                <div class="divider"><span>or continue with</span></div>
+                <div class="social-btns">
+                    <button class="btn-social" onclick="socialLogin('Google')">🌐 Google</button>
+                    <button class="btn-social" onclick="socialLogin('Phone')">📱 Phone</button>
+                </div>
+                <div class="terms-note">By signing in you agree to our <a href="#">Terms of Service</a> and <a
+                        href="#">Privacy Policy</a>.</div>
+            </div>
+
+            <!-- ── Sign Up ─────────────────────────────────────────────────────── -->
+            <div class="form-section" id="signup-form">
+                <div class="form-header">
+                    <div class="form-title">Join L2C 🍕</div>
+                    <div class="form-sub">Get <strong>₹100 off</strong> your first order when you sign up.</div>
+                </div>
+                <form onsubmit="handleSignUp(event)">
+                    <div class="form-row">
+                        <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label">First Name</label>
+                            <div class="input-wrap">
+                                <span class="icon">👤</span>
+                                <input class="form-input" type="text" id="su-fname" placeholder="Ravi" required />
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0">
+                            <label class="form-label">Last Name</label>
+                            <div class="input-wrap">
+                                <span class="icon">👤</span>
+                                <input class="form-input" type="text" id="su-lname" placeholder="Kumar" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:18px">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrap">
+                            <span class="icon">✉️</span>
+                            <input class="form-input" type="email" id="su-email" placeholder="you@example.com"
+                                required />
+                        </div>
+                        <div class="error-msg" id="su-email-err">Email already registered.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <div class="input-wrap">
+                            <span class="phone-prefix">🇮🇳 +91</span>
+                            <input class="form-input phone-input" type="tel" id="su-phone" placeholder="98765 43210"
+                                maxlength="10" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrap">
+                            <span class="icon">🔒</span>
+                            <input class="form-input" type="password" id="su-password" placeholder="Min. 8 characters"
+                                required oninput="checkStrength(this.value)" />
+                            <span class="show-pwd" onclick="togglePwd('su-password',this)">👁</span>
+                        </div>
+                        <div id="strength-bar"
+                            style="height:4px;border-radius:4px;margin-top:8px;background:var(--border);transition:all 0.3s">
+                        </div>
+                        <div id="strength-label" style="font-size:11px;color:var(--gray);margin-top:4px"></div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="su-btn">Create Account →</button>
+                </form>
+                <div class="divider"><span>or sign up with</span></div>
+                <div class="social-btns">
+                    <button class="btn-social" onclick="socialLogin('Google')">🌐 Google</button>
+                    <button class="btn-social" onclick="socialLogin('Phone')">📱 Phone</button>
+                </div>
+                <div class="terms-note">By creating an account you agree to our <a href="#">Terms</a> and <a
+                        href="#">Privacy Policy</a>.</div>
+            </div>
+
+            <!-- ── Phone OTP Step ─────────────────────────────────────────────── -->
+            <div class="phone-step" id="otp-step">
+                <div class="back-btn" onclick="backFromOTP()">← Back</div>
+                <div class="form-header">
+                    <div class="form-title">Enter OTP 📱</div>
+                    <div class="form-sub">We sent a 4-digit code to <strong id="otp-phone-display">+91 98765
+                            43210</strong></div>
+                </div>
+                <div class="otp-wrap">
+                    <input class="otp-input" type="text" maxlength="1" id="otp1" oninput="otpNext(this,'otp2')" />
+                    <input class="otp-input" type="text" maxlength="1" id="otp2" oninput="otpNext(this,'otp3')" />
+                    <input class="otp-input" type="text" maxlength="1" id="otp3" oninput="otpNext(this,'otp4')" />
+                    <input class="otp-input" type="text" maxlength="1" id="otp4" oninput="otpSubmit(this)" />
+                </div>
+                <button class="btn-submit" onclick="verifyOTP()" id="otp-btn">Verify & Continue →</button>
+                <p style="text-align:center;font-size:12px;color:var(--gray);margin-top:16px">Didn't receive it? <span
+                        style="color:var(--primary);cursor:pointer;font-weight:600" onclick="resendOTP()">Resend in
+                        <span id="countdown">30</span>s</span></p>
+            </div>
+
+            <!-- ── Success ─────────────────────────────────────────────────────── -->
+            <div class="success-screen" id="success-screen">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">You're in!</div>
+                <div class="success-sub">Welcome to L2C. Your ₹100 discount has been added to your account.</div>
+                <button class="btn-continue" onclick="finishAuth()">Browse Restaurants
+                    →</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        function switchTab(tab) {
+            ['signin', 'signup'].forEach(t => {
+                document.getElementById(`${t}-form`).classList.toggle('active', t === tab);
+                document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+            });
+        }
+
+        function togglePwd(id, btn) {
+            const inp = document.getElementById(id);
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+            btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+        }
+
+        function checkStrength(val) {
+            const bar = document.getElementById('strength-bar');
+            const lbl = document.getElementById('strength-label');
+            if (!val) { bar.style.background = 'var(--border)'; bar.style.width = '100%'; lbl.textContent = ''; return; }
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+            const colors = ['#e74c3c', '#f39c12', '#27ae60', '#1abc9c'];
+            const labels = ['Weak', 'Fair', 'Strong', 'Very Strong'];
+            const widths = ['25%', '50%', '75%', '100%'];
+            bar.style.background = colors[score - 1] || 'var(--border)';
+            bar.style.width = widths[score - 1] || '0%';
+            lbl.textContent = score ? labels[score - 1] : '';
+            lbl.style.color = colors[score - 1] || 'var(--gray)';
+        }
+
+        async function handleSignIn(e) {
+            e.preventDefault();
+            const email = document.getElementById('si-email').value;
+            const password = document.getElementById('si-password').value;
+            const btn = document.getElementById('si-btn');
+
+            try {
+                btn.textContent = 'Signing in...'; btn.classList.add('loading');
+                await L2C.login(email, password);
+                btn.textContent = 'Sign In →'; btn.classList.remove('loading');
+                showSuccess();
+            } catch (err) {
+                btn.textContent = 'Sign In →'; btn.classList.remove('loading');
+                alert(err.message);
+            }
+        }
+
+        let signupData = {};
+        function handleSignUp(e) {
+            e.preventDefault();
+            signupData = {
+                firstName: document.getElementById('su-fname').value,
+                lastName: document.getElementById('su-lname').value,
+                email: document.getElementById('su-email').value,
+                phone: document.getElementById('su-phone').value,
+                password: document.getElementById('su-password').value
+            };
+
+            const users = L2C.getUsers();
+            if (users.some(u => u.email === signupData.email)) {
+                alert('Email already registered.');
+                return;
+            }
+
+            document.getElementById('otp-phone-display').textContent = `+91 ${signupData.phone}`;
+            showOTPStep();
+        }
+
+        function showOTPStep() {
+            document.getElementById('auth-tabs').style.display = 'none';
+            document.getElementById('signin-form').classList.remove('active');
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('otp-step').classList.add('active');
+            startCountdown();
+            document.getElementById('otp1').focus();
+        }
+
+        function backFromOTP() {
+            document.getElementById('auth-tabs').style.display = 'flex';
+            document.getElementById('otp-step').classList.remove('active');
+            switchTab('signup');
+        }
+
+        function showPhoneOTP() {
+            const phone = prompt('Enter your registered phone number:');
+            if (!phone) return;
+            document.getElementById('otp-phone-display').textContent = `+91 ${phone}`;
+            showOTPStep();
+        }
+
+        function otpNext(el, nextId) {
+            if (el.value.length === 1 && nextId) document.getElementById(nextId).focus();
+        }
+
+        function otpSubmit(el) {
+            if (el.value.length === 1) verifyOTP();
+        }
+
+        async function verifyOTP() {
+            const otp = ['otp1', 'otp2', 'otp3', 'otp4'].map(id => document.getElementById(id).value).join('');
+            if (otp.length < 4) { alert('Please enter the 4-digit OTP.'); return; }
+
+            const btn = document.getElementById('otp-btn');
+            btn.textContent = 'Verifying...';
+            try {
+                if (signupData.email) {
+                    await L2C.register(signupData);
+                }
+                showSuccess();
+            } catch (err) {
+                btn.textContent = 'Verify OTP';
+                alert(err.message);
+            }
+        }
+
+        function showSuccess() {
+            document.getElementById('auth-card').querySelectorAll('.form-section,.phone-step,.auth-tabs').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
+            document.getElementById('success-screen').style.display = 'block';
+        }
+
+        function finishAuth() {
+            const redirect = localStorage.getItem('l2c_redirect_after_login') || 'index.html';
+            localStorage.removeItem('l2c_redirect_after_login');
+            window.location.href = redirect;
+        }
+
+        let countdownTimer;
+        function startCountdown() {
+            let sec = 30;
+            document.getElementById('countdown').textContent = sec;
+            clearInterval(countdownTimer);
+            countdownTimer = setInterval(() => {
+                sec--;
+                const el = document.getElementById('countdown');
+                if (el) el.textContent = sec;
+                if (sec <= 0) clearInterval(countdownTimer);
+            }, 1000);
+        }
+
+        function resendOTP() { startCountdown(); alert('OTP resent!'); }
+
+        function socialLogin(provider) {
+            alert(`🔗 Redirecting to ${provider} login...\n\n(In the full build, this integrates with Azure AD B2C's social identity providers.)`);
+        }
+    </script>
+</body>
+
+</html>

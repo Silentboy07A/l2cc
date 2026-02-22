@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>L2C — Lazy 2 Cook | Order Food Fast</title>
+    <meta name="description"
+        content="L2C is a hyper-fast, premium food delivery platform. Get meals delivered in under 20 minutes with one-tap checkout and live tracking." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ─── Design Tokens (from Zomato / dembrandt) ─────────────────────── */
+        :root {
+            --color-primary: #ef4f5f;
+            --color-primary-dark: #d43f4f;
+            --color-primary-light: #ffedef;
+            --color-dark: #293142;
+            --color-gray: #62626a;
+            --color-light-gray: #f4f4f5;
+            --color-border: #e6e9ef;
+            --color-white: #ffffff;
+            --color-bg: #f8f8f8;
+
+            --font-family: 'Lexend', sans-serif;
+
+            --spacing-4: 4px;
+            --spacing-6: 6px;
+            --spacing-8: 8px;
+            --spacing-12: 12px;
+            --spacing-16: 16px;
+            --spacing-20: 20px;
+            --spacing-24: 24px;
+            --spacing-32: 32px;
+            --spacing-40: 40px;
+            --spacing-48: 48px;
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --radius-pill: 9999px;
+
+            --shadow-sm: 0px 2px 4px -2px rgba(0, 0, 0, 0.1), 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0px 4px 6px -4px rgba(0, 0, 0, 0.1), 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-card: 0px 4px 19.3px 0px rgba(0, 0, 0, 0.09);
+        }
+
+        /* ─── Reset ────────────────────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--color-white);
+            color: var(--color-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font-family);
+            border: none;
+            outline: none;
+        }
+
+        /* ─── Navbar ────────────────────────────────────────────────────────── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 0.8px solid var(--color-border);
+            padding: 0 var(--spacing-40);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: box-shadow 0.3s;
+        }
+
+        .navbar.scrolled {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-8);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--color-primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .logo-text span {
+            color: var(--color-primary);
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-32);
+            list-style: none;
+        }
+
+        .navbar-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-gray);
+            transition: color 0.2s;
+        }
+
+        .navbar-links a:hover {
+            color: var(--color-primary);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-16);
+        }
+
+        .btn-ghost {
+            padding: 8px 20px;
+            border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-dark);
+            background: transparent;
+            border: 1.5px solid var(--color-border);
+            transition: all 0.2s;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .btn-primary {
+            padding: 9px 22px;
+            border-radius: var(--radius-pill);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-white);
+            background: var(--color-primary);
+            transition: all 0.25s;
+            box-shadow: 0 2px 8px rgba(239, 79, 95, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(239, 79, 95, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ─── Hero ──────────────────────────────────────────────────────────── */
+        .hero {
+            min-height: 88vh;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%, #fff0f1 100%);
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-48) var(--spacing-40);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(239, 79, 95, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(239, 79, 95, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-6);
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: var(--radius-pill);
+            margin-bottom: var(--spacing-20);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .hero-title {
+            font-size: 60px;
+            font-weight: 700;
+            line-height: 1.0;
+            color: var(--color-dark);
+            margin-bottom: var(--spacing-16);
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero-title .highlight {
+            color: var(--color-primary);
+            position: relative;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            color: var(--color-gray);
+            line-height: 1.6;
+            max-width: 480px;
+            margin-bottom: var(--spacing-40);
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .hero-search {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-6);
+            gap: var(--spacing-8);
+            animation: fadeInUp 0.6s ease 0.3s both;
+            border: 0.8px solid var(--color-border);
+        }
+
+        .search-input {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-8);
+            flex: 1;
+            padding: 10px var(--spacing-16);
+            border-right: 0.8px solid var(--color-border);
+        }
+
+        .search-input input {
+            border: none;
+            outline: none;
+            font-family: var(--font-family);
+            font-size: 14px;
+            color: var(--color-dark);
+            width: 100%;
+            background: transparent;
+        }
+
+        .search-input input::placeholder {
+            color: var(--color-gray);
+        }
+
+        .search-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .search-cuisine {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-8);
+            padding: 10px var(--spacing-16);
+            flex: 1;
+        }
+
+        .search-cuisine select {
+            border: none;
+            outline: none;
+            font-family: var(--font-family);
+            font-size: 14px;
+            color: var(--color-gray);
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .hero-search .btn-primary {
+            padding: 12px 28px;
+            font-size: 15px;
+            border-radius: var(--radius-md);
+            flex-shrink: 0;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: var(--spacing-32);
+            margin-top: var(--spacing-32);
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--color-dark);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-gray);
+            margin-top: 2px;
+        }
+
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .hero-cards-stack {
+            position: relative;
+            width: 340px;
+            height: 440px;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            border: 0.8px solid var(--color-border);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .floating-card:nth-child(1) {
+            width: 220px;
+            top: 0;
+            right: 0;
+            animation-delay: 0s;
+        }
+
+        .floating-card:nth-child(2) {
+            width: 200px;
+            top: 160px;
+            left: 0;
+            animation-delay: 1.5s;
+        }
+
+        .floating-card:nth-child(3) {
+            width: 180px;
+            bottom: 0;
+            right: 20px;
+            animation-delay: 0.8s;
+        }
+
+        .card-img {
+            height: 120px;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .card-img.green {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+        }
+
+        .card-img.orange {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+        }
+
+        .card-body {
+            padding: var(--spacing-12) var(--spacing-16);
+        }
+
+        .card-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: 4px;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-8);
+            font-size: 11px;
+            color: var(--color-gray);
+        }
+
+        .card-tag {
+            background: var(--color-primary-light);
+            color: var(--color-primary);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+        }
+
+        .live-badge {
+            position: absolute;
+            top: -8px;
+            right: 12px;
+            background: var(--color-primary);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1.2s infinite;
+        }
+
+        /* ─── Lazy Levels ───────────────────────────────────────────────────── */
+        .section {
+            padding: 80px var(--spacing-40);
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 2.6px;
+            margin-bottom: var(--spacing-12);
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-dark);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-12);
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--color-gray);
+            max-width: 500px;
+            margin-bottom: var(--spacing-40);
+        }
+
+        .lazy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-24);
+        }
+
+        .lazy-card {
+            background: var(--color-white);
+            border: 0.8px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-32);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lazy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--color-primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .lazy-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-primary-light);
+        }
+
+        .lazy-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .lazy-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin-bottom: var(--spacing-24);
+        }
+
+        .lazy-level {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: var(--spacing-6);
+        }
+
+        .lazy-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-bottom: var(--spacing-8);
+        }
+
+        .lazy-desc {
+            font-size: 14px;
+            color: var(--color-gray);
+            line-height: 1.6;
+        }
+
+        .lazy-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-6);
+            margin-top: var(--spacing-20);
+            background: var(--color-light-gray);
+            border-radius: var(--radius-pill);
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+
+        /* ─── How It Works ───────────────────────────────────────────────────── */
+        .how-section {
+            background: var(--color-bg);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-32);
+            position: relative;
+        }
+
+        .steps-grid::before {
+            content: '';
+            position: absolute;
+            top: 36px;
+            left: calc(16.66% + 24px);
+            right: calc(16.66% + 24px);
+            height: 2px;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+            z-index: 0;
+        }
+
+        .step-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-32);
+            text-align: center;
+            border: 0.8px solid var(--color-border);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            background: var(--color-primary);
+            color: var(--color-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 auto var(--spacing-20);
+            box-shadow: 0 4px 12px rgba(239, 79, 95, 0.35);
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: var(--spacing-8);
+        }
+
+        .step-desc {
+            font-size: 14px;
+            color: var(--color-gray);
+            line-height: 1.6;
+        }
+
+        /* ─── CTA Banner ─────────────────────────────────────────────────────── */
+        .cta-section {
+            background: linear-gradient(135deg, var(--color-dark) 0%, #1a2035 100%);
+            padding: 80px var(--spacing-40);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(239, 79, 95, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-title {
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--color-white);
+            line-height: 1.15;
+            margin-bottom: var(--spacing-16);
+        }
+
+        .cta-title span {
+            color: var(--color-primary);
+        }
+
+        .cta-subtitle {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: var(--spacing-32);
+            max-width: 440px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: var(--spacing-16);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary-lg {
+            padding: 14px 36px;
+            border-radius: var(--radius-pill);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-white);
+            background: var(--color-primary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(239, 79, 95, 0.4);
+        }
+
+        .btn-primary-lg:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 79, 95, 0.45);
+        }
+
+        .btn-outline-light {
+            padding: 14px 36px;
+            border-radius: var(--radius-pill);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-white);
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .btn-outline-light:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ─── Footer ─────────────────────────────────────────────────────────── */
+        .footer {
+            background: var(--color-dark);
+            padding: var(--spacing-48) var(--spacing-40) var(--spacing-32);
+            border-top: 0.8px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .footer-inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: var(--spacing-48);
+            margin-bottom: var(--spacing-40);
+        }
+
+        .footer-brand .logo-text {
+            color: var(--color-white);
+            margin-top: var(--spacing-12);
+            font-size: 22px;
+            display: block;
+        }
+
+        .footer-tagline {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-top: var(--spacing-8);
+            line-height: 1.6;
+        }
+
+        .footer-heading {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2.6px;
+            margin-bottom: var(--spacing-16);
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-12);
+        }
+
+        .footer-links a {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-primary);
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: var(--spacing-24);
+            border-top: 0.8px solid rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ─── Animations ─────────────────────────────────────────────────────── */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ─── Responsive ─────────────────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .hero {
+                flex-direction: column;
+                gap: var(--spacing-48);
+                padding: var(--spacing-40) var(--spacing-24);
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .hero-visual {
+                justify-content: center;
+            }
+
+            .lazy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid::before {
+                display: none;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 var(--spacing-20);
+            }
+
+            .navbar-links {
+                display: none;
+            }
+
+            .section {
+                padding: 60px var(--spacing-20);
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .hero-search {
+                flex-direction: column;
+            }
+
+            .search-input {
+                border-right: none;
+                border-bottom: 0.8px solid var(--color-border);
+            }
+
+            .hero-cards-stack {
+                width: 100%;
+                max-width: 320px;
+                height: 360px;
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+    <script src="common.js"></script>
+</head>
+
+<body>
+
+    <!-- ── Navbar ─────────────────────────────────────────────────────────── -->
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="navbar-logo">
+            <div class="logo-icon">🍜</div>
+            <span class="logo-text">L<span>2</span>C</span>
+        </a>
+        <ul class="navbar-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="restaurants.html">Restaurants</a></li>
+            <li><a href="favorites.html">Favorites</a></li>
+            <li><a href="orders.html">Orders</a></li>
+            <li><a href="tracking.html">Track Order</a></li>
+            <li>
+                <a href="cart.html" style="position:relative;display:inline-flex;align-items:center;gap:6px;">
+                    🛒 Cart
+                    <span id="nav-cart-badge"
+                        style="display:none;background:var(--color-primary);color:white;border-radius:9999px;font-size:10px;font-weight:700;padding:1px 6px;line-height:1.6;">0</span>
+                </a>
+            </li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div class="navbar-actions">
+            <button class="btn-ghost" onclick="window.location.href='login.html'">Sign In</button>
+            <button class="btn-primary" onclick="window.location.href='restaurants.html'">Order Now →</button>
+        </div>
+    </nav>
+
+    <!-- ── Hero ───────────────────────────────────────────────────────────── -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span>🔥</span>
+                <span>Hyper-Fast Delivery</span>
+            </div>
+            <h1 class="hero-title">
+                Too Lazy<br />to <span class="highlight">Cook?</span><br />We Got You.
+            </h1>
+            <p class="hero-subtitle">
+                Premium food from your favourite restaurants, delivered in under 20 minutes. One tap. Zero effort.
+                Maximum flavour.
+            </p>
+
+            <div class="hero-search" id="search-bar">
+                <div class="search-input">
+                    <span class="search-icon">📍</span>
+                    <input type="text" id="location-input" placeholder="Enter your delivery location" />
+                </div>
+                <div class="search-cuisine">
+                    <span class="search-icon">🍽️</span>
+                    <select id="cuisine-select" aria-label="Select cuisine">
+                        <option value="">All Cuisines</option>
+                        <option>🍕 Pizza</option>
+                        <option>🍣 Sushi</option>
+                        <option>🍔 Burgers</option>
+                        <option>🍛 Biryani</option>
+                        <option>🥗 Salads</option>
+                        <option>🍜 Noodles</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="search-btn" onclick="handleSearch()">Search 🔍</button>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">12K+</div>
+                    <div class="stat-label">Restaurants</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">&lt;20min</div>
+                    <div class="stat-label">Avg. Delivery</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.8★</div>
+                    <div class="stat-label">Avg. Rating</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-cards-stack">
+                <div class="floating-card">
+                    <div class="card-img">🍕</div>
+                    <div class="card-body">
+                        <div class="live-badge">
+                            <div class="live-dot"></div> LIVE
+                        </div>
+                        <div class="card-name">Pizzeria Napoli</div>
+                        <div class="card-meta">
+                            <span>⭐ 4.9</span>
+                            <span class="card-tag">⚡ 12 min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="card-img green">🍛</div>
+                    <div class="card-body">
+                        <div class="card-name">Biryani Palace</div>
+                        <div class="card-meta">
+                            <span>⭐ 4.7</span>
+                            <span class="card-tag">⚡ 18 min</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card">
+                    <div class="card-img orange">🍔</div>
+                    <div class="card-body">
+                        <div class="card-name">Burger Theory</div>
+                        <div class="card-meta">
+                            <span>⭐ 4.8</span>
+                            <span class="card-tag">⚡ 15 min</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Recently Ordered ────────────────────────────────────────────────── -->
+    <section class="section" id="recently-ordered" style="display:none; padding-bottom:0;">
+        <div class="section-tag">Welcome Back</div>
+        <h2 class="section-title" style="margin-bottom:24px;">Pick up where you left off.</h2>
+        <div id="recent-grid" style="display:flex; gap:20px; overflow-x:auto; padding:10px 0 30px;">
+            <!-- Recently ordered cards will be here -->
+        </div>
+    </section>
+
+    <!-- ── Lazy Levels ────────────────────────────────────────────────────── -->
+    <section class="section" id="features">
+        <div class="section-tag">Why L2C</div>
+        <h2 class="section-title">Built for the Lazy.<br />Actually, Built for the Smart.</h2>
+        <p class="section-subtitle">We took every friction point out of food delivery. Here's what that means for you.
+        </p>
+
+        <div class="lazy-grid">
+            <div class="lazy-card">
+                <div class="lazy-icon">⚡</div>
+                <div class="lazy-level">Lazy Level 1</div>
+                <div class="lazy-title">Under 20 Minutes</div>
+                <p class="lazy-desc">Our geo-fencing engine connects you only to restaurants that can realistically
+                    reach your door in under 20 minutes. No false promises.</p>
+                <span class="lazy-stat">🕐 Avg. 14 min delivery</span>
+            </div>
+
+            <div class="lazy-card">
+                <div class="lazy-icon">👆</div>
+                <div class="lazy-level">Lazy Level 2</div>
+                <div class="lazy-title">One-Tap Checkout</div>
+                <p class="lazy-desc">Your saved address, your preferred payment method, your regular order — done in a
+                    single tap. No forms. No friction. Just food.</p>
+                <span class="lazy-stat">💳 Saved in 1 tap</span>
+            </div>
+
+            <div class="lazy-card">
+                <div class="lazy-icon">🛵</div>
+                <div class="lazy-level">Lazy Level 3</div>
+                <div class="lazy-title">Live Tracking</div>
+                <p class="lazy-desc">Watch your order go from "Confirmed" to "At Your Door" in real time. Azure Maps
+                    powered GPS tracking with driver ETA updates every 30 seconds.</p>
+                <span class="lazy-stat">📍 Real-time GPS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How It Works ───────────────────────────────────────────────────── -->
+    <section class="section how-section" id="how">
+        <div style="text-align:center;">
+            <div class="section-tag">The Process</div>
+            <h2 class="section-title">Order in 3 Lazy Steps</h2>
+            <p class="section-subtitle" style="margin:0 auto var(--spacing-40);">We designed the path from hunger to
+                full with one goal: minimum effort from you.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-title">Drop your pin</div>
+                <p class="step-desc">Type your address or let us detect it automatically. Our geo-fence activates and
+                    shows you only what's reachable right now.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <div class="step-title">Pick your craving</div>
+                <p class="step-desc">Browse restaurants filtered by your "Lazy Level" — delivery time, cuisine, or even
+                    time of day. Our AI helps if you're undecided.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <div class="step-title">Tap once, eat soon</div>
+                <p class="step-desc">One-tap checkout with your saved details. Sit back and watch the live tracker as
+                    your order makes its way to you.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── CTA ────────────────────────────────────────────────────────────── -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to be <span>Lazy</span>?</h2>
+            <p class="cta-subtitle">Join 500,000+ people who have given up cooking forever. Download L2C and get ₹100
+                off your first order.</p>
+            <div class="cta-buttons">
+                <button class="btn-primary-lg" id="get-app-btn" onclick="handleGetApp()">🍕 Get the App</button>
+                <button class="btn-outline-light" id="browse-btn" onclick="handleBrowse()">Browse Restaurants →</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="navbar-logo">
+                    <div class="logo-icon">🍜</div>
+                </div>
+                <span class="logo-text">L2C — Lazy 2 Cook</span>
+                <p class="footer-tagline">Premium food delivery for people who have better things to do than cook.
+                    Powered by Azure Container Apps.</p>
+            </div>
+
+            <div>
+                <div class="footer-heading">Platform</div>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Restaurants</a></li>
+                    <li><a href="#">Track Order</a></li>
+                    <li><a href="#">L2C Pro</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="footer-heading">Company</div>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Partner with Us</a></li>
+                    <li><a href="#">Press</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <div class="footer-heading">Legal</div>
+                <ul class="footer-links">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">Accessibility</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2025 L2C Technologies Pvt. Ltd. All rights reserved.</span>
+            <span>Built with ❤️ and Azure</span>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll shadow
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            nav.classList.toggle('scrolled', window.scrollY > 10);
+        });
+
+        // Search handler
+        function handleSearch() {
+            const loc = document.getElementById('location-input').value.trim();
+            const cuisine = document.getElementById('cuisine-select').value;
+            if (!loc) {
+                document.getElementById('location-input').focus();
+                document.getElementById('location-input').style.outline = '2px solid #ef4f5f';
+                setTimeout(() => document.getElementById('location-input').style.outline = '', 1500);
+                return;
+            }
+            alert(`🔍 Searching restaurants near "${loc}"${cuisine ? ` for ${cuisine}` : ''}...\n\nIn a full build, this would load filtered results from the Restaurant Service (Cosmos DB).`);
+        }
+
+        // CTA handlers
+        function handleGetApp() {
+            alert('📱 App download coming soon!\n\nL2C is currently in beta. Leave your email to be notified at launch.');
+        }
+        function handleBrowse() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Enter key on search
+        document.getElementById('location-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        // Intersection observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.lazy-card, .step-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(24px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+
+        // ── Live Cart Badge ────────────────────────────────────────────────
+        function updateNavCartBadge() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('l2c_cart') || '{}');
+                const qty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+                const badge = document.getElementById('nav-cart-badge');
+                if (badge) {
+                    badge.style.display = qty > 0 ? 'inline' : 'none';
+                    badge.textContent = qty;
+                }
+            } catch (e) { }
+        }
+        updateNavCartBadge();
+        window.addEventListener('storage', updateNavCartBadge);
+        function renderRecent() {
+            const history = JSON.parse(localStorage.getItem('l2c_orders_history') || '[]');
+            if (history.length === 0) return;
+
+            const section = document.getElementById('recently-ordered');
+            const grid = document.getElementById('recent-grid');
+            section.style.display = 'block';
+
+            // Get unique restaurants from last 5 orders
+            const recentRests = [];
+            const seen = new Set();
+            for (const order of history) {
+                if (!seen.has(order.restaurant)) {
+                    recentRests.push(order);
+                    seen.add(order.restaurant);
+                }
+                if (recentRests.length >= 4) break;
+            }
+
+            grid.innerHTML = recentRests.map(order => `
+                <div class="floating-card" style="position:static; flex-shrink:0; width:280px; cursor:pointer;" onclick="window.location.href='tracking.html'">
+                    <div class="card-img" style="font-size:32px;">🍽️</div>
+                    <div class="card-body">
+                        <div class="card-name">${order.restaurant}</div>
+                        <div class="card-meta">
+                            <span style="font-size:12px; color:var(--color-gray)">Last ordered: ${new Date(order.placedAt).toLocaleDateString()}</span>
+                        </div>
+                        <div style="margin-top:10px; font-size:13px; font-weight:600; color:var(--color-primary)">Reorder →</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecent();
+        });
+    </script>
+</body>
+
+</html>

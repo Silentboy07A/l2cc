@@ -1,0 +1,13 @@
+node_modules
+.env
+.DS_Store
+*.log
+.vscode
+.idea
+.gemini
+C:\Users\csbal\.gemini\antigravity\brain
+C:\Users\csbal\.gemini\antigravity\brain\*
+prdcd.docx
+l2ctecstackk.docx
+output
+prdcd_extracted

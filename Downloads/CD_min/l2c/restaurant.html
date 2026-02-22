@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizzeria Napoli — Menu | L2C</title>
+    <meta name="description"
+        content="Order from Pizzeria Napoli on L2C. Authentic Neapolitan pizzas delivered in under 20 minutes." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <script src="common.js"></script>
+    <style>
+        :root {
+            --primary: #ef4f5f;
+            --primary-dark: #d43f4f;
+            --primary-light: #ffedef;
+            --dark: #293142;
+            --gray: #62626a;
+            --border: #e6e9ef;
+            --light-gray: #f4f4f5;
+            --white: #ffffff;
+            --green: #1ba672;
+            --font: 'Lexend', sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 20px;
+            --r-pill: 9999px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+            --navbar-h: 64px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light-gray);
+            color: var(--dark);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: var(--font);
+            border: none;
+            outline: none;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        /* ── Navbar ──────────────────────────────────────────────────────────── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: .8px solid var(--border);
+            padding: 0 40px;
+            height: var(--navbar-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            border-radius: var(--r-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray);
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-ghost {
+            padding: 8px 20px;
+            border-radius: var(--r-pill);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            background: transparent;
+            border: 1.5px solid var(--border);
+            transition: all .2s;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            padding: 9px 22px;
+            border-radius: var(--r-pill);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--primary);
+            transition: all .25s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ── Hero Banner ─────────────────────────────────────────────────────── */
+        .restaurant-hero {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&h=400&fit=crop&auto=format') center/cover no-repeat;
+            background-color: #1a1a2e;
+        }
+
+        .hero-bg-emoji {
+            position: absolute;
+            font-size: 260px;
+            opacity: .06;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            user-select: none;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, .7) 0%, rgba(0, 0, 0, .15) 60%, transparent 100%);
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 32px 40px;
+            display: flex;
+            align-items: flex-end;
+            gap: 24px;
+        }
+
+        .rest-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--r-md);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .25);
+        }
+
+        .hero-text {}
+
+        .hero-name {
+            font-size: 30px;
+            font-weight: 700;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .hero-tag {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .75);
+            background: rgba(255, 255, 255, .12);
+            backdrop-filter: blur(6px);
+            padding: 4px 12px;
+            border-radius: var(--r-pill);
+        }
+
+        .hero-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: var(--r-pill);
+        }
+
+        .badge-green {
+            background: var(--green);
+            color: white;
+        }
+
+        .badge-red {
+            background: var(--primary);
+            color: white;
+        }
+
+        .hero-stats {
+            margin-left: auto;
+            display: flex;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        .h-stat {
+            text-align: center;
+        }
+
+        .h-stat-val {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .h-stat-lbl {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .6);
+            margin-top: 2px;
+        }
+
+        /* ── Offer Strip ─────────────────────────────────────────────────────── */
+        .offer-strip {
+            background: white;
+            border-bottom: .8px solid var(--border);
+            padding: 0 40px;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .offer-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .offer-chip {
+            flex-shrink: 0;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-right: .8px solid var(--border);
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            color: var(--dark);
+        }
+
+        .offer-chip .tag {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .offer-icon {
+            font-size: 18px;
+        }
+
+        /* ── Main Layout ─────────────────────────────────────────────────────── */
+        .page-wrap {
+            display: flex;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 40px;
+            gap: 32px;
+            align-items: flex-start;
+        }
+
+        /* ── Category Sidebar ────────────────────────────────────────────────── */
+        .cat-sidebar {
+            width: 180px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: var(--r-lg);
+            border: .8px solid var(--border);
+            padding: 12px;
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+        }
+
+        .cat-sidebar-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 8px 8px 12px;
+        }
+
+        .cat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--r-md);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .cat-item:hover {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .cat-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .cat-item .cat-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .cat-count {
+            margin-left: auto;
+            font-size: 11px;
+            background: var(--light-gray);
+            padding: 2px 7px;
+            border-radius: var(--r-pill);
+            color: var(--gray);
+        }
+
+        .cat-item.active .cat-count {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* ── Menu Content ────────────────────────────────────────────────────── */
+        .menu-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Search bar */
+        .menu-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border-radius: var(--r-pill);
+            border: .8px solid var(--border);
+            padding: 10px 18px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .05);
+        }
+
+        .menu-search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: var(--font);
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .menu-search input::placeholder {
+            color: var(--gray);
+        }
+
+        /* Veg/Non-veg filter */
+        .diet-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .diet-btn {
+            padding: 6px 16px;
+            border-radius: var(--r-pill);
+            font-size: 12px;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s;
+        }
+
+        .diet-btn.active-veg {
+            border-color: #1ba672;
+            color: #1ba672;
+            background: #e8fdf4;
+        }
+
+        .diet-btn.active-nonveg {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .veg-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1.5px solid #1ba672;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .veg-dot::after {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #1ba672;
+        }
+
+        .nonveg-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1.5px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nonveg-dot::after {
+            content: '';
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        /* Menu section */
+        .menu-section {
+            margin-bottom: 40px;
+        }
+
+        .menu-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+            padding-bottom: 16px;
+            border-bottom: .8px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-section-count {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--gray);
+        }
+
+        /* Item card */
+        .item-card {
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            border-bottom: .8px solid var(--border);
+            position: relative;
+            transition: background .15s;
+        }
+
+        .item-card:last-child {
+            border-bottom: none;
+        }
+
+        .item-card:hover {
+            background: rgba(239, 79, 95, .015);
+        }
+
+        .item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-type {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .type-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            border: 1.5px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .type-dot.veg {
+            border-color: #1ba672;
+        }
+
+        .type-dot.veg::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #1ba672;
+        }
+
+        .type-dot.nonveg {
+            border-color: var(--primary);
+        }
+
+        .type-dot.nonveg::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .item-bestseller {
+            font-size: 10px;
+            font-weight: 700;
+            color: #f39c12;
+            background: #fff8e8;
+            padding: 2px 8px;
+            border-radius: var(--r-pill);
+        }
+
+        .item-new {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--green);
+            background: #e8fdf4;
+            padding: 2px 8px;
+            border-radius: var(--r-pill);
+        }
+
+        .item-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .item-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .item-price .original {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--gray);
+            text-decoration: line-through;
+            margin-left: 6px;
+        }
+
+        .item-desc {
+            font-size: 12px;
+            color: var(--gray);
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--green);
+            margin-top: 6px;
+        }
+
+        /* Image + add button */
+        .item-right {
+            width: 130px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .item-img {
+            width: 130px;
+            height: 100px;
+            border-radius: var(--r-md);
+            object-fit: cover;
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            overflow: hidden;
+        }
+
+        .item-img-placeholder {
+            width: 130px;
+            height: 100px;
+            border-radius: var(--r-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .add-btn-wrap {
+            position: absolute;
+            bottom: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .btn-add {
+            padding: 7px 20px;
+            border-radius: var(--r-pill);
+            font-size: 13px;
+            font-weight: 700;
+            background: white;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+            transition: all .2s;
+        }
+
+        .btn-add:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: var(--primary);
+            border-radius: var(--r-pill);
+            box-shadow: 0 2px 8px rgba(239, 79, 95, .35);
+            overflow: hidden;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            background: transparent;
+            flex-shrink: 0;
+            transition: background .15s;
+        }
+
+        .qty-btn:hover {
+            background: rgba(255, 255, 255, .2);
+        }
+
+        .qty-val {
+            min-width: 28px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            padding: 0 2px;
+        }
+
+        /* ── Cart Sidebar ────────────────────────────────────────────────────── */
+        .cart-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: var(--r-lg);
+            border: .8px solid var(--border);
+            position: sticky;
+            top: calc(var(--navbar-h) + 24px);
+            max-height: calc(100vh - var(--navbar-h) - 48px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .cart-empty-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: .4;
+        }
+
+        .cart-empty-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+        }
+
+        .cart-empty-sub {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+
+        .cart-header {
+            padding: 20px 20px 16px;
+            border-bottom: .8px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cart-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .cart-rest {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .cart-badge {
+            background: var(--primary);
+            color: white;
+            border-radius: var(--r-pill);
+            padding: 3px 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .cart-item-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .cart-qty-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cq-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            transition: all .2s;
+        }
+
+        .cq-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .cq-val {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark);
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .cart-item-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark);
+            min-width: 44px;
+            text-align: right;
+        }
+
+        .cart-footer {
+            padding: 16px 20px 20px;
+            border-top: .8px solid var(--border);
+        }
+
+        .cart-bill-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 6px;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 10px 0 16px;
+        }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--r-pill);
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            background: var(--primary);
+            text-align: center;
+            transition: all .25s;
+            box-shadow: 0 4px 12px rgba(239, 79, 95, .35);
+        }
+
+        .btn-checkout:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(239, 79, 95, .4);
+        }
+
+        /* Delivery info row */
+        .delivery-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            background: var(--light-gray);
+            border-radius: var(--r-md);
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .delivery-row strong {
+            color: var(--dark);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--dark);
+            color: white;
+            border-radius: var(--r-pill);
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+            z-index: 9999;
+            transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media(max-width:1100px) {
+            .cart-sidebar {
+                width: 260px;
+            }
+        }
+
+        @media(max-width:900px) {
+            .page-wrap {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .cat-sidebar {
+                width: 100%;
+                position: static;
+                display: flex;
+                gap: 0;
+                padding: 8px;
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+
+            .cat-sidebar::-webkit-scrollbar {
+                display: none;
+            }
+
+            .cat-sidebar-title {
+                display: none;
+            }
+
+            .cat-item {
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                position: static;
+                max-height: none;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .hero-stats {
+                margin-left: 0;
+            }
+
+            .navbar {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ── Navbar ───────────────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <a class="logo" href="index.html">
+            <div class="logo-icon">🍜</div>
+            <span class="logo-text">L<span>2</span>C</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="restaurants.html">Restaurants</a></li>
+            <li><a href="favorites.html">Favorites</a></li>
+            <li><a href="orders.html">Orders</a></li>
+            <li><a href="tracking.html">Track Order</a></li>
+            <li>
+                <a href="cart.html" style="position:relative;display:inline-flex;align-items:center;gap:6px;">
+                    🛒 Cart
+                    <span id="nav-cart-badge"
+                        style="display:none;background:var(--primary);color:white;border-radius:9999px;font-size:10px;font-weight:700;padding:1px 6px;line-height:1.6;">0</span>
+                </a>
+            </li>
+            <li><a href="profile.html">Profile</a></li>
+        </ul>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-ghost" onclick="window.location.href='login.html'">Sign In</button>
+            <button class="btn-primary" onclick="window.location.href='restaurants.html'">← All Restaurants</button>
+        </div>
+    </nav>
+
+    <!-- ── Restaurant Hero ──────────────────────────────────────────────── -->
+    <div class="restaurant-hero">
+        <div class="hero-bg-emoji">🍕</div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="rest-logo">🍕</div>
+            <div class="hero-text">
+                <div class="hero-name">Pizzeria Napoli</div>
+                <div class="hero-tags">
+                    <span class="hero-tag">Pizza</span>
+                    <span class="hero-tag">Italian</span>
+                    <span class="hero-tag">Pasta</span>
+                    <span class="hero-badge badge-green">⚡ 12 min</span>
+                    <span class="hero-badge badge-red">20% OFF</span>
+                </div>
+            </div>
+            <div class="hero-stats">
+                <div class="h-stat">
+                    <div class="h-stat-val">4.9★</div>
+                    <div class="h-stat-lbl">Rating</div>
+                </div>
+                <div class="h-stat">
+                    <div class="h-stat-val">12K+</div>
+                    <div class="h-stat-lbl">Orders</div>
+                </div>
+                <div class="h-stat">
+                    <div class="h-stat-val">₹40</div>
+                    <div class="h-stat-lbl">Delivery</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Offer Strip ──────────────────────────────────────────────────── -->
+    <div class="offer-strip">
+        <div class="offer-chip"><span class="offer-icon">🏷️</span> <span class="tag">20% OFF</span> up to ₹100 | Use
+            <span class="tag">LAZY20</span>
+        </div>
+        <div class="offer-chip"><span class="offer-icon">🆓</span> FREE delivery on orders above ₹299</div>
+        <div class="offer-chip"><span class="offer-icon">🎁</span> Buy 2 Pizzas, get Garlic Bread FREE</div>
+        <div class="offer-chip"><span class="offer-icon">💳</span> Extra 10% with HDFC Credit Card</div>
+    </div>
+
+    <!-- ── Page Wrap ─────────────────────────────────────────────────────── -->
+    <div class="page-wrap">
+
+        <!-- Category sidebar -->
+        <aside class="cat-sidebar" id="cat-sidebar">
+            <div class="cat-sidebar-title">Menu</div>
+            <div class="cat-item active" onclick="scrollToSection('bestsellers',this)"><span class="cat-icon">⭐</span>
+                Bestsellers <span class="cat-count">5</span></div>
+            <div class="cat-item" onclick="scrollToSection('pizzas',this)"><span class="cat-icon">🍕</span> Pizzas <span
+                    class="cat-count">6</span></div>
+            <div class="cat-item" onclick="scrollToSection('pasta',this)"><span class="cat-icon">🍝</span> Pasta <span
+                    class="cat-count">4</span></div>
+            <div class="cat-item" onclick="scrollToSection('sides',this)"><span class="cat-icon">🥖</span> Sides <span
+                    class="cat-count">4</span></div>
+            <div class="cat-item" onclick="scrollToSection('drinks',this)"><span class="cat-icon">🥤</span> Drinks <span
+                    class="cat-count">3</span></div>
+            <div class="cat-item" onclick="scrollToSection('desserts',this)"><span class="cat-icon">🍰</span> Desserts
+                <span class="cat-count">3</span>
+            </div>
+        </aside>
+
+        <!-- Menu content -->
+        <main class="menu-content">
+
+            <!-- Search + diet toggle -->
+            <div class="menu-search">
+                <span style="font-size:18px">🔍</span>
+                <input type="text" id="menu-search-input" placeholder="Search in Pizzeria Napoli menu…"
+                    oninput="filterMenu()" />
+            </div>
+            <div class="diet-toggle">
+                <button class="diet-btn" id="btn-veg" onclick="toggleDiet('veg')">
+                    <div class="veg-dot"></div> Veg only
+                </button>
+                <button class="diet-btn" id="btn-nonveg" onclick="toggleDiet('nonveg')">
+                    <div class="nonveg-dot"></div> Non-veg
+                </button>
+            </div>
+
+            <!-- ── BESTSELLERS ──────────────────────────────────────────────── -->
+            <div class="menu-section" id="bestsellers">
+                <div class="menu-section-title">⭐ Bestsellers <span class="menu-section-count">· 5 items</span></div>
+
+                <div class="item-card" data-name="Margherita Pizza" data-price="279" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">Margherita Pizza</div>
+                        <div class="item-price">₹279 <span class="original">₹349</span></div>
+                        <div class="item-desc">Classic Neapolitan pizza with house tomato sauce, fresh mozzarella, and
+                            basil. A timeless masterpiece.</div>
+                        <div class="item-rating">★ 4.9 · 2.1K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#ff9a9e,#fad0c4);">🍕
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-1">
+                            <button class="btn-add" onclick="addItem(1,'Margherita Pizza',279)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Pepperoni Passion" data-price="349" data-type="nonveg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot nonveg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">Pepperoni Passion</div>
+                        <div class="item-price">₹349 <span class="original">₹429</span></div>
+                        <div class="item-desc">Loaded with spicy pepperoni, mozzarella, and our signature tomato sauce.
+                            A guaranteed crowd-pleaser.</div>
+                        <div class="item-rating">★ 4.8 · 1.8K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#f093fb,#f5576c);">🍕
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-2">
+                            <button class="btn-add" onclick="addItem(2,'Pepperoni Passion',349)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Truffle Mushroom Pizza" data-price="399" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div><span class="item-new">🌟 New</span>
+                        </div>
+                        <div class="item-name">Truffle Mushroom Pizza</div>
+                        <div class="item-price">₹399</div>
+                        <div class="item-desc">Wild mushrooms, truffle oil drizzle, caramelised onions, fontina cheese
+                            on a thin crisp base.</div>
+                        <div class="item-rating">★ 4.9 · 890 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#d4fc79,#96e6a1);">🍄
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-3">
+                            <button class="btn-add" onclick="addItem(3,'Truffle Mushroom Pizza',399)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Napoli Pasta" data-price="229" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Napoli Pasta</div>
+                        <div class="item-price">₹229 <span class="original">₹279</span></div>
+                        <div class="item-desc">Penne in a rich San Marzano tomato sauce with fresh herbs. Simple,
+                            soul-warming, perfect.</div>
+                        <div class="item-rating">★ 4.7 · 1.1K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#ffecd2,#fcb69f);">🍝
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-4">
+                            <button class="btn-add" onclick="addItem(4,'Napoli Pasta',229)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Garlic Breadsticks" data-price="129" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">Garlic Breadsticks (6 pcs)</div>
+                        <div class="item-price">₹129</div>
+                        <div class="item-desc">Crispy breadsticks brushed with garlic butter and herbs. Served with
+                            marinara dip.</div>
+                        <div class="item-rating">★ 4.8 · 3.2K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#f6d365,#fda085);">🥖
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-5">
+                            <button class="btn-add" onclick="addItem(5,'Garlic Breadsticks',129)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PIZZAS ────────────────────────────────────────────────────── -->
+            <div class="menu-section" id="pizzas">
+                <div class="menu-section-title">🍕 Pizzas <span class="menu-section-count">· 6 items</span></div>
+
+                <div class="item-card" data-name="Quattro Formaggi" data-price="379" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Quattro Formaggi</div>
+                        <div class="item-price">₹379</div>
+                        <div class="item-desc">Four-cheese pizza — mozzarella, gorgonzola, parmesan, and fontina.
+                            Indulgent and creamy.</div>
+                        <div class="item-rating">★ 4.8 · 756 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#ffeaa7,#fdcb6e);">🧀
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-6">
+                            <button class="btn-add" onclick="addItem(6,'Quattro Formaggi',379)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="BBQ Chicken Pizza" data-price="369" data-type="nonveg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot nonveg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">BBQ Chicken Pizza</div>
+                        <div class="item-price">₹369 <span class="original">₹449</span></div>
+                        <div class="item-desc">Tender grilled chicken, smoky BBQ sauce, red onions, mozzarella. A
+                            classic done right.</div>
+                        <div class="item-rating">★ 4.9 · 1.4K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#2d3436,#636e72);">🍗
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-7">
+                            <button class="btn-add" onclick="addItem(7,'BBQ Chicken Pizza',369)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Veggie Supreme" data-price="299" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Veggie Supreme</div>
+                        <div class="item-price">₹299</div>
+                        <div class="item-desc">Bell peppers, olives, roasted zucchini, cherry tomatoes, onion on a pesto
+                            base.</div>
+                        <div class="item-rating">★ 4.6 · 623 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#a8edea,#fed6e3);">🥦
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-8">
+                            <button class="btn-add" onclick="addItem(8,'Veggie Supreme',299)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Prawn Aglio e Olio Pizza" data-price="429" data-type="nonveg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot nonveg"></div><span class="item-new">🌟 New</span>
+                        </div>
+                        <div class="item-name">Prawn Aglio e Olio Pizza</div>
+                        <div class="item-price">₹429</div>
+                        <div class="item-desc">Garlic-infused prawns, chilli flakes, lemon zest, parmesan on a white
+                            cream base.</div>
+                        <div class="item-rating">★ 4.8 · 312 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#e0c3fc,#8ec5fc);">🦐
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-9">
+                            <button class="btn-add" onclick="addItem(9,'Prawn Aglio e Olio Pizza',429)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── PASTA ─────────────────────────────────────────────────────── -->
+            <div class="menu-section" id="pasta">
+                <div class="menu-section-title">🍝 Pasta <span class="menu-section-count">· 4 items</span></div>
+
+                <div class="item-card" data-name="Penne Arrabiata" data-price="199" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Penne Arrabiata</div>
+                        <div class="item-price">₹199</div>
+                        <div class="item-desc">Fiery tomato-chilli sauce clings to al-dente penne. Topped with fresh
+                            parsley and parmesan.</div>
+                        <div class="item-rating">★ 4.7 · 892 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#ff6b6b,#feca57);">🍝
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-10">
+                            <button class="btn-add" onclick="addItem(10,'Penne Arrabiata',199)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Chicken Alfredo" data-price="279" data-type="nonveg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot nonveg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">Chicken Alfredo</div>
+                        <div class="item-price">₹279 <span class="original">₹329</span></div>
+                        <div class="item-desc">Creamy parmesan Alfredo sauce with grilled chicken strips and fettuccine.
+                            Rich and comforting.</div>
+                        <div class="item-rating">★ 4.9 · 1.5K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#f8f9fa,#dee2e6);">🍗
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-11">
+                            <button class="btn-add" onclick="addItem(11,'Chicken Alfredo',279)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── SIDES ─────────────────────────────────────────────────────── -->
+            <div class="menu-section" id="sides">
+                <div class="menu-section-title">🥖 Sides <span class="menu-section-count">· 4 items</span></div>
+
+                <div class="item-card" data-name="Cheesy Fries" data-price="149" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Cheesy Fries</div>
+                        <div class="item-price">₹149</div>
+                        <div class="item-desc">Crispy golden fries smothered in nacho cheese sauce with jalapeños.</div>
+                        <div class="item-rating">★ 4.6 · 1.2K ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#f9ca24,#f0932b);">🍟
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-12">
+                            <button class="btn-add" onclick="addItem(12,'Cheesy Fries',149)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Soup of the Day" data-price="179" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div><span class="item-new">🌟 New</span>
+                        </div>
+                        <div class="item-name">Tomato Bisque Soup</div>
+                        <div class="item-price">₹179</div>
+                        <div class="item-desc">Velvety tomato bisque with a swirl of cream, croutons, and fresh basil.
+                            Served hot.</div>
+                        <div class="item-rating">★ 4.7 · 430 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#eb4d4b,#f9ca24);">🍲
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-13">
+                            <button class="btn-add" onclick="addItem(13,'Tomato Bisque Soup',179)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── DRINKS ─────────────────────────────────────────────────────── -->
+            <div class="menu-section" id="drinks">
+                <div class="menu-section-title">🥤 Drinks <span class="menu-section-count">· 3 items</span></div>
+
+                <div class="item-card" data-name="Coke (500ml)" data-price="60" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Coke (500ml)</div>
+                        <div class="item-price">₹60</div>
+                        <div class="item-desc">Classic Coca-Cola. Ice cold.</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">🥤
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-14">
+                            <button class="btn-add" onclick="addItem(14,'Coke (500ml)',60)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Fresh Lemonade" data-price="89" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Fresh Lemonade</div>
+                        <div class="item-price">₹89</div>
+                        <div class="item-desc">Hand-squeezed lemon, hint of mint, chilled still water. Refreshing and
+                            zingy.</div>
+                        <div class="item-rating">★ 4.8 · 512 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#f9ca24,#6ab04c);">🍋
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-15">
+                            <button class="btn-add" onclick="addItem(15,'Fresh Lemonade',89)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── DESSERTS ───────────────────────────────────────────────────── -->
+            <div class="menu-section" id="desserts">
+                <div class="menu-section-title">🍰 Desserts <span class="menu-section-count">· 3 items</span></div>
+
+                <div class="item-card" data-name="Tiramisu" data-price="199" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div><span class="item-bestseller">⚡ Bestseller</span>
+                        </div>
+                        <div class="item-name">Classic Tiramisu</div>
+                        <div class="item-price">₹199</div>
+                        <div class="item-desc">Layers of espresso-soaked ladyfingers and mascarpone cream dusted with
+                            cocoa. Heavenly.</div>
+                        <div class="item-rating">★ 5.0 · 643 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">☕
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-16">
+                            <button class="btn-add" onclick="addItem(16,'Classic Tiramisu',199)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-card" data-name="Chocolate Lava Cake" data-price="179" data-type="veg">
+                    <div class="item-info">
+                        <div class="item-type">
+                            <div class="type-dot veg"></div>
+                        </div>
+                        <div class="item-name">Chocolate Lava Cake</div>
+                        <div class="item-price">₹179</div>
+                        <div class="item-desc">Warm dark chocolate cake with a molten gooey center. Served with a scoop
+                            of vanilla gelato.</div>
+                        <div class="item-rating">★ 4.9 · 890 ratings</div>
+                    </div>
+                    <div class="item-right">
+                        <div class="item-img-placeholder" style="background:linear-gradient(135deg,#2d3436,#6c5ce7);">🍫
+                        </div>
+                        <div class="add-btn-wrap" id="btn-wrap-17">
+                            <button class="btn-add" onclick="addItem(17,'Chocolate Lava Cake',179)">ADD</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ── Cart Sidebar ────────────────────────────────────────────────── -->
+        <aside class="cart-sidebar" id="cart-sidebar">
+
+            <!-- Empty state -->
+            <div class="cart-empty" id="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <div class="cart-empty-title">Your cart is empty</div>
+                <div class="cart-empty-sub">Add items from the menu to get started</div>
+            </div>
+
+            <!-- Cart has items (hidden initially) -->
+            <div id="cart-full" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+                <div class="cart-header">
+                    <div>
+                        <div class="cart-title">Your Order</div>
+                        <div class="cart-rest">Pizzeria Napoli</div>
+                    </div>
+                    <div class="cart-badge" id="cart-count">0</div>
+                </div>
+
+                <div class="cart-items" id="cart-items-list"></div>
+
+                <div class="cart-footer">
+                    <div class="delivery-row">
+                        <span>🛵</span>
+                        <span>Delivery by <strong>Arjun</strong> · <strong
+                                style="color:var(--green)">~${currentRestaurant.time || 20} min</strong></span>
+                    </div>
+                    <div class="cart-bill-row"><span>Item total</span><span id="cart-subtotal">₹0</span></div>
+                    <div class="cart-bill-row"><span>Delivery fee</span><span style="color:var(--green)"
+                            id="cart-delivery">FREE</span></div>
+                    <div class="cart-bill-row"><span>Taxes (5%)</span><span id="cart-tax">₹0</span></div>
+                    <div class="cart-total"><span>To Pay</span><span id="cart-total">₹0</span></div>
+                    <a class="btn-checkout" href="cart.html" id="btn-checkout">Proceed to Checkout →</a>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <script>
+        // ── Cart State ─────────────────────────────────────────────────────────
+        const cart = {}; // { id: { name, price, qty } }
+
+        const params = new URLSearchParams(window.location.search);
+        let currentRestaurant = { id: params.get('id'), name: params.get('name'), cuisine: params.get('cuisine') || 'General' };
+
+        window.addEventListener('l2c_ready', () => {
+            const found = L2C.restaurants.find(r => r.id == currentRestaurant.id);
+            if (found) {
+                currentRestaurant = found;
+                applyURLParams();
+            }
+        });
+
+        // Fallback for direct loads if already ready
+        if (L2C.restaurants && L2C.restaurants.length > 0) {
+            const found = L2C.restaurants.find(r => r.id == currentRestaurant.id);
+            if (found) currentRestaurant = found;
+        }
+
+        function saveCartToStorage() {
+            localStorage.setItem('l2c_cart', JSON.stringify(cart));
+            localStorage.setItem('l2c_cart_restaurant', currentRestaurant.name);
+        }
+
+        function addItem(id, name, price) {
+            if (cart[id]) {
+                cart[id].qty++;
+            } else {
+                cart[id] = { name, price, qty: 1 };
+            }
+            updateBtnWrap(id);
+            renderCart();
+            saveCartToStorage();
+            showToast(`Added ${name}`);
+        }
+
+        function changeQty(id, delta) {
+            if (!cart[id]) return;
+            cart[id].qty += delta;
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+                resetBtn(id);
+            } else {
+                updateBtnWrap(id);
+            }
+            renderCart();
+            saveCartToStorage();
+        }
+
+        function resetBtn(id) {
+            const wrap = document.getElementById(`btn-wrap-${id}`);
+            if (!wrap) return;
+            const card = wrap.closest('.item-card');
+            if (!card) return;
+            const name = card.querySelector('.item-name').textContent;
+            const price = parseInt(card.dataset.price);
+            wrap.innerHTML = `<button class="btn-add" onclick="addItem(${id},'${name.replace(/'/g, "\\'")}',${price})">ADD</button>`;
+        }
+
+        function updateBtnWrap(id) {
+            const wrap = document.getElementById(`btn-wrap-${id}`);
+            if (!wrap) return;
+            const qty = cart[id]?.qty || 0;
+            if (qty === 0) { resetBtn(id); return; }
+            wrap.innerHTML = `
+      <div class="qty-control">
+        <button class="qty-btn" onclick="changeQty(${id},-1)">−</button>
+        <span class="qty-val">${qty}</span>
+        <button class="qty-btn" onclick="changeQty(${id},+1)">+</button>
+      </div>`;
+        }
+
+        function renderCart() {
+            const keys = Object.keys(cart);
+            const emptyEl = document.getElementById('cart-empty');
+            const fullEl = document.getElementById('cart-full');
+            const listEl = document.getElementById('cart-items-list');
+            const countEl = document.getElementById('cart-count');
+
+            if (keys.length === 0) {
+                emptyEl.style.display = 'flex';
+                fullEl.style.display = 'none';
+                return;
+            }
+
+            emptyEl.style.display = 'none';
+            fullEl.style.display = 'flex';
+
+            let subtotal = 0;
+            let totalQty = 0;
+            listEl.innerHTML = '';
+
+            keys.forEach(id => {
+                const it = cart[id];
+                subtotal += it.price * it.qty;
+                totalQty += it.qty;
+
+                const row = document.createElement('div');
+                row.className = 'cart-item';
+                row.innerHTML = `
+        <span class="cart-item-name">${it.name}</span>
+        <div class="cart-qty-wrap">
+          <button class="cq-btn" onclick="changeQty(${id},-1)">−</button>
+          <span class="cq-val">${it.qty}</span>
+          <button class="cq-btn" onclick="changeQty(${id},+1)">+</button>
+        </div>
+        <span class="cart-item-price">₹${it.price * it.qty}</span>`;
+                listEl.appendChild(row);
+            });
+
+            const delivery = subtotal >= 299 ? 0 : 40;
+            const tax = Math.round(subtotal * 0.05);
+            const total = subtotal + delivery + tax;
+
+            countEl.textContent = totalQty;
+            document.getElementById('cart-subtotal').textContent = `₹${subtotal}`;
+            document.getElementById('cart-delivery').textContent = delivery === 0 ? 'FREE' : `₹${delivery}`;
+            document.getElementById('cart-tax').textContent = `₹${tax}`;
+            document.getElementById('cart-total').textContent = `₹${total}`;
+        }
+
+        // ── Menu search ─────────────────────────────────────────────────────────
+        function filterMenu() {
+            const q = document.getElementById('menu-search-input').value.toLowerCase();
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.style.display = card.dataset.name.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        // ── Diet filter ─────────────────────────────────────────────────────────
+        let dietActive = null;
+        function toggleDiet(type) {
+            const btn = document.getElementById(`btn-${type}`);
+            if (dietActive === type) {
+                dietActive = null;
+                btn.className = 'diet-btn';
+                document.querySelectorAll('.item-card').forEach(c => c.style.display = '');
+            } else {
+                dietActive = type;
+                document.getElementById('btn-veg').className = 'diet-btn';
+                document.getElementById('btn-nonveg').className = 'diet-btn';
+                btn.className = `diet-btn active-${type}`;
+                document.querySelectorAll('.item-card').forEach(c => {
+                    c.style.display = c.dataset.type === type ? '' : 'none';
+                });
+            }
+        }
+
+        // ── Category scroll ─────────────────────────────────────────────────────
+        function scrollToSection(id, el) {
+            document.querySelectorAll('.cat-item').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            const sec = document.getElementById(id);
+            if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Highlight category on scroll
+        const sections = ['bestsellers', 'pizzas', 'pasta', 'sides', 'drinks', 'desserts'];
+        const catItems = document.querySelectorAll('.cat-item');
+        window.addEventListener('scroll', () => {
+            let current = sections[0];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.getBoundingClientRect().top < 120) current = id;
+            });
+            catItems.forEach((item, i) => {
+                item.classList.toggle('active', sections[i] === current);
+            });
+        });
+
+        // ── Toast ────────────────────────────────────────────────────────────────
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = '🛒 ' + msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function escQ(s) { return s.replace(/'/g, "\\'"); }
+
+        // ── Real food photos (Unsplash) ───────────────────────────────────────
+        const foodPhotos = {
+            1: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=260&h=200&fit=crop&auto=format', // margherita
+            2: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=260&h=200&fit=crop&auto=format', // pepperoni
+            3: 'https://images.unsplash.com/photo-1588315029754-2dd089d39a1a?w=260&h=200&fit=crop&auto=format', // mushroom pizza
+            4: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=260&h=200&fit=crop&auto=format', // napoli pasta
+            5: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=260&h=200&fit=crop&auto=format', // garlic bread
+            6: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=260&h=200&fit=crop&auto=format', // 4 cheese pizza
+            7: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=260&h=200&fit=crop&auto=format', // bbq chicken pizza
+            8: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=260&h=200&fit=crop&auto=format', // veggie pizza
+            9: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=260&h=200&fit=crop&auto=format', // seafood pizza
+            10: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=260&h=200&fit=crop&auto=format', // penne arrabiata
+            11: 'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=260&h=200&fit=crop&auto=format', // chicken alfredo
+            12: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=260&h=200&fit=crop&auto=format', // cheesy fries
+            13: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=260&h=200&fit=crop&auto=format', // tomato soup
+            14: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=260&h=200&fit=crop&auto=format', // coke
+            15: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=260&h=200&fit=crop&auto=format', // lemonade
+            16: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=260&h=200&fit=crop&auto=format', // tiramisu
+            17: 'https://images.unsplash.com/photo-1606313564200-e75d5e30ef07?w=260&h=200&fit=crop&auto=format', // lava cake
+        };
+        Object.entries(foodPhotos).forEach(([id, url]) => {
+            const wrap = document.getElementById('btn-wrap-' + id);
+            if (!wrap) return;
+            const placeholder = wrap.closest('.item-right').querySelector('.item-img-placeholder');
+            if (placeholder) {
+                placeholder.style.backgroundImage = `url('${url}')`;
+                placeholder.style.backgroundSize = 'cover';
+                placeholder.style.backgroundPosition = 'center';
+                placeholder.innerHTML = '';
+            }
+        });
+
+        const escQ = (str) => str.replace(/'/g, "\\'");
+
+        // ── Read URL params to personalise the page ─────────────────────────────
+        // ── Personalized Menu Data ───────────────────────────────────────
+        const menusByCuisine = {
+            'Pizza': [
+                { id: 1, name: 'Margherita Pizza', price: 299, type: 'veg', desc: 'Classic hand-tossed crust with mozzarella' },
+                { id: 2, name: 'Pepperoni Party', price: 449, type: 'nonveg', desc: 'Double pepperoni with extra cheese' }
+            ],
+            'Biryani': [
+                { id: 101, name: 'Chicken Dum Biryani', price: 320, type: 'nonveg', desc: 'Aromatic basmati rice with tender chicken' },
+                { id: 102, name: 'Paneer Makhani Biryani', price: 280, type: 'veg', desc: 'Spiced paneer cubes with saffron rice' }
+            ],
+            'Burgers': [
+                { id: 201, name: 'Classic Cheeseburger', price: 249, type: 'nonveg', desc: 'Juicy beef patty with melty cheddar' },
+                { id: 202, name: 'Spicy Veggie Burger', price: 199, type: 'veg', desc: 'Crunchy veg patty with peri-peri mayo' }
+            ],
+            'Default': [
+                { id: 9991, name: 'Signature Dish', price: 350, type: 'nonveg', desc: 'Our chef\'s special recommendation' },
+                { id: 9992, name: 'House Salad', price: 180, type: 'veg', desc: 'Fresh greens with balsamic vinaigrette' }
+            ]
+        };
+
+        (function applyURLParams() {
+            if (currentRestaurant.name) {
+                document.title = `${currentRestaurant.name} — Menu | L2C`;
+                const heroName = document.querySelector('.hero-name');
+                if (heroName) heroName.textContent = currentRestaurant.name;
+                const cartRest = document.querySelector('.cart-rest');
+                if (cartRest) cartRest.textContent = currentRestaurant.name;
+                localStorage.setItem('l2c_cart_restaurant', currentRestaurant.name);
+            }
+
+            // Swap menu items based on cuisine
+            const cuisineType = currentRestaurant.cuisine.split(' · ')[0];
+            const items = menusByCuisine[cuisineType] || menusByCuisine['Default'];
+            const bestsellersGrid = document.querySelector('#bestsellers .menu-grid');
+            if (bestsellersGrid && items.length) {
+                bestsellersGrid.innerHTML = items.map(it => `
+                    <div class="item-card" data-name="${it.name}" data-price="${it.price}" data-type="${it.type}">
+                        <div class="item-left">
+                            <span class="diet-icon ${it.type}">${it.type === 'veg' ? '🟢' : '🔴'}</span>
+                            <div class="item-name">${it.name}</div>
+                            <div class="item-price">₹${it.price}</div>
+                            <div class="item-desc">${it.desc}</div>
+                        </div>
+                        <div class="item-right">
+                            <div class="item-img-placeholder">${it.name[0]}</div>
+                            <div class="btn-wrap" id="btn-wrap-${it.id}">
+                                <button class="btn-add" onclick="addItem(${it.id}, '${escQ(it.name)}', ${it.price})">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        })();
+
+        // ── Live Cart Badge ────────────────────────────────────────────────
+        function updateNavCartBadge() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('l2c_cart') || '{}');
+                const qty = Object.values(cart).reduce((s, i) => s + i.qty, 0);
+                const badge = document.getElementById('nav-cart-badge');
+                if (badge) {
+                    badge.style.display = qty > 0 ? 'inline' : 'none';
+                    badge.textContent = qty;
+                }
+            } catch (e) { }
+        }
+        updateNavCartBadge();
+        window.addEventListener('storage', updateNavCartBadge);
+
+        // Init render
+        renderCart();
+    </script>
+</body>
+
+</html>

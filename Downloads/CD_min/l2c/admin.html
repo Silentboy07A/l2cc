@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurant Admin | L2C</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #ef4f5f;
+            --primary-dark: #d43f4f;
+            --dark: #293142;
+            --gray: #62626a;
+            --border: #e6e9ef;
+            --light-gray: #f4f4f5;
+            --white: #ffffff;
+            --green: #1ba672;
+            --font: 'Lexend', sans-serif;
+            --r-sm: 8px;
+            --r-md: 12px;
+            --r-lg: 20px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--light-gray);
+            color: var(--dark);
+            padding: 40px;
+        }
+
+        .admin-wrap {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .orders-table {
+            width: 100%;
+            background: white;
+            border-radius: var(--r-md);
+            border: .8px solid var(--border);
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+        .orders-table th {
+            background: #fafafa;
+            padding: 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: .8px solid var(--border);
+        }
+
+        .orders-table td {
+            padding: 16px;
+            border-bottom: .8px solid var(--border);
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: var(--r-sm);
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            margin-right: 8px;
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-green:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            border-radius: var(--r-pill);
+            background: var(--dark);
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-wrap">
+        <div class="admin-header">
+            <h1 class="admin-title">Restaurant Admin Dashboard 👨‍🍳</h1>
+            <button class="refresh-btn" onclick="renderOrders()">🔄 Refresh Orders</button>
+        </div>
+
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orders-body">
+                <!-- Data here -->
+            </tbody>
+        </table>
+
+        <div id="no-orders" style="display:none; text-align:center; padding: 40px; color: var(--gray);">
+            No orders found in history.
+        </div>
+    </div>
+
+    <script>
+        function renderOrders() {
+            const body = document.getElementById('orders-body');
+            const noOrders = document.getElementById('no-orders');
+            const history = JSON.parse(localStorage.getItem('l2c_orders_history') || '[]');
+
+            if (history.length === 0) {
+                body.innerHTML = '';
+                noOrders.style.display = 'block';
+                return;
+            }
+
+            noOrders.style.display = 'none';
+            body.innerHTML = history.map((order, idx) => `
+                <tr>
+                    <td><strong>#${order.orderId}</strong></td>
+                    <td style="color:var(--gray)">${order.items.map(it => it.name).join(', ')}</td>
+                    <td>₹${order.total}</td>
+                    <td><span class="status-badge" style="background:#eee">${order.status || 'Preparing'}</span></td>
+                    <td>
+                        <button class="btn-action" onclick="updateStatus(${idx}, 'Preparing')">Prep</button>
+                        <button class="btn-action" onclick="updateStatus(${idx}, 'On the Way')">Way</button>
+                        <button class="btn-action btn-green" onclick="updateStatus(${idx}, 'Delivered')">Done</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStatus(idx, status) {
+            const history = JSON.parse(localStorage.getItem('l2c_orders_history') || '[]');
+            if (!history[idx]) return;
+
+            history[idx].status = status;
+            localStorage.setItem('l2c_orders_history', JSON.stringify(history));
+
+            // If it's the last order, update that too for the tracking page
+            const lastOrder = JSON.parse(localStorage.getItem('l2c_last_order') || '{}');
+            if (lastOrder.orderId === history[idx].orderId) {
+                lastOrder.status = status;
+                localStorage.setItem('l2c_last_order', JSON.stringify(lastOrder));
+            }
+
+            renderOrders();
+        }
+
+        renderOrders();
+    </script>
+</body>
+
+</html>
