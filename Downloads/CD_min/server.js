@@ -3,11 +3,17 @@ const cors = require('cors');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 require('dotenv').config();
+
+const User = require('./models/User');
+const Restaurant = require('./models/Restaurant');
+const Order = require('./models/Order');
 
 const app = express();
 const PORT = process.env.PORT || 80;
 const SECRET_KEY = process.env.SECRET_KEY || 'l2c_secret_9944';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/l2c';
 
 app.use(cors());
 app.use(express.json());
@@ -15,41 +21,51 @@ app.use(express.json());
 // Serve static frontend files from 'l2c' folder
 app.use(express.static(path.join(__dirname, 'l2c')));
 
-// Mock Database
-let users = [];
+// MongoDB Connection
+mongoose.connect(MONGODB_URI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Auth APIs ---
 
 app.post('/api/auth/register', async (req, res) => {
-    const { firstName, lastName, email, phone, password } = req.body;
+    try {
+        const { firstName, lastName, email, phone, password } = req.body;
 
-    if (users.find(u => u.email === email)) {
-        return res.status(400).json({ message: 'User already exists' });
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const newUser = new User({ firstName, lastName, email, phone, password });
+        await newUser.save();
+
+        const token = jwt.sign({ email: newUser.email }, SECRET_KEY, { expiresIn: '1h' });
+        res.json({ token, user: { firstName, lastName, email } });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error during registration' });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = { firstName, lastName, email, phone, password: hashedPassword };
-    users.push(newUser);
-
-    const token = jwt.sign({ email: newUser.email }, SECRET_KEY, { expiresIn: '1h' });
-    res.json({ token, user: { firstName, lastName, email } });
 });
 
 app.post('/api/auth/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find(u => u.email === email);
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-    if (user && await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-        res.json({ token, user: { firstName: user.firstName, lastName: user.lastName, email: user.email } });
-    } else {
-        res.status(401).json({ message: 'Invalid credentials' });
+        if (user && await user.comparePassword(password)) {
+            const token = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: '1h' });
+            res.json({ token, user: { firstName: user.firstName, lastName: user.lastName, email: user.email } });
+        } else {
+            res.status(401).json({ message: 'Invalid credentials' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Server error during login' });
     }
 });
 
 // --- Data APIs ---
 
-const restaurants = [
+const initialRestaurants = [
     { id: 1, name: 'Pizzeria Napoli', cuisine: 'Pizza · Italian', emoji: '🍕', bg: 'linear-gradient(135deg,#ff9a9e,#fecfef)', rating: 4.9, time: 12, price: 350, offer: '20% OFF upto ₹100', isVeg: false, isNew: false, tag: '⚡ Blazing Fast' },
     { id: 2, name: 'Biryani Palace', cuisine: 'Biryani · Mughlai', emoji: '🍛', bg: 'linear-gradient(135deg,#a8edea,#fed6e3)', rating: 4.7, time: 18, price: 280, offer: 'Free delivery', isVeg: false, isNew: false, tag: '' },
     { id: 3, name: 'Burger Theory', cuisine: 'Burgers · American', emoji: '🍔', bg: 'linear-gradient(135deg,#ffecd2,#fcb69f)', rating: 4.8, time: 15, price: 320, offer: 'Buy 1 Get 1', isVeg: false, isNew: true, tag: '🆕 New' },
@@ -64,11 +80,25 @@ const restaurants = [
     { id: 12, name: 'Smoothie Lab', cuisine: 'Healthy · Juices', emoji: '🥤', bg: 'linear-gradient(135deg,#43e97b,#38f9d7)', rating: 4.7, time: 10, price: 160, offer: 'Free add-on', isVeg: true, isNew: false, tag: '⚡ Blazing Fast' },
 ];
 
-app.get('/api/restaurants', (req, res) => {
-    res.json(restaurants);
+async function seedRestaurants() {
+    const count = await Restaurant.countDocuments();
+    if (count === 0) {
+        await Restaurant.insertMany(initialRestaurants);
+        console.log('Seeded restaurants to database');
+    }
+}
+seedRestaurants();
+
+app.get('/api/restaurants', async (req, res) => {
+    try {
+        const restaurants = await Restaurant.find();
+        res.json(restaurants);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching restaurants' });
+    }
 });
 
-// Fallback to index.html for SPA-like behavior (optional as we use multiple .html files)
+// Fallback to index.html for SPA-like behavior
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'l2c', 'index.html'));
 });
