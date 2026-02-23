@@ -1,10 +1,134 @@
 // ============================================
-// SAVEHYDROO - ML Prediction Engine
-// Lightweight prediction for TDS and tank timing
+// SAVEHYDROO - ML Prediction Engine (Random Rain Forest Edition)
+// Lightweight ensemble prediction for TDS and tank timing
 // ============================================
 
 /**
- * Simple Linear Regression for time-series prediction
+ * Storm Guard - Anomaly Detection
+ * Filters out "heavy rain" (noisy sensor spikes)
+ */
+class StormGuard {
+    static detect(data, windowSize = 5, threshold = 2.5) {
+        if (data.length < windowSize) return data.map(() => false);
+
+        const anomalies = [];
+        for (let i = 0; i < data.length; i++) {
+            if (i < windowSize) {
+                anomalies.push(false);
+                continue;
+            }
+
+            const window = data.slice(i - windowSize, i);
+            const mean = window.reduce((a, b) => a + b, 0) / windowSize;
+            const variance = window.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / windowSize;
+            const stdDev = Math.sqrt(variance);
+
+            const isAnomaly = stdDev > 0 && Math.abs(data[i] - mean) > threshold * stdDev;
+            anomalies.push(isAnomaly);
+        }
+        return anomalies;
+    }
+}
+
+/**
+ * Simple Decision Tree Regressor (A single "Raindrop")
+ */
+class RaindropTree {
+    constructor(maxDepth = 3) {
+        this.maxDepth = maxDepth;
+        this.tree = null;
+    }
+
+    fit(x, y) {
+        this.tree = this._buildTree(x, y, 0);
+    }
+
+    _buildTree(x, y, depth) {
+        if (depth >= this.maxDepth || x.length <= 2) {
+            return { value: y.reduce((a, b) => a + b, 0) / y.length };
+        }
+
+        let bestSplit = null;
+        let minMSE = Infinity;
+
+        // Try simple splits based on index (time-ordered)
+        for (let i = 1; i < x.length - 1; i++) {
+            const leftY = y.slice(0, i);
+            const rightY = y.slice(i);
+
+            const leftMean = leftY.reduce((a, b) => a + b, 0) / leftY.length;
+            const rightMean = rightY.reduce((a, b) => a + b, 0) / rightY.length;
+
+            const mse = leftY.reduce((a, b) => a + Math.pow(b - leftMean, 2), 0) +
+                rightY.reduce((a, b) => a + Math.pow(b - rightMean, 2), 0);
+
+            if (mse < minMSE) {
+                minMSE = mse;
+                bestSplit = { index: i, threshold: x[i] };
+            }
+        }
+
+        if (!bestSplit) return { value: y.reduce((a, b) => a + b, 0) / y.length };
+
+        return {
+            threshold: bestSplit.threshold,
+            left: this._buildTree(x.slice(0, bestSplit.index), y.slice(0, bestSplit.index), depth + 1),
+            right: this._buildTree(x.slice(bestSplit.index), y.slice(bestSplit.index), depth + 1)
+        };
+    }
+
+    predict(val) {
+        let node = this.tree;
+        while (node && node.threshold !== undefined) {
+            node = val < node.threshold ? node.left : node.right;
+        }
+        return node ? node.value : 0;
+    }
+}
+
+/**
+ * Random Rain Forest - Ensemble of RaindropTrees
+ */
+class RandomRainForest {
+    constructor(numTrees = 5) {
+        this.numTrees = numTrees;
+        this.forest = [];
+        this.isTrained = false;
+    }
+
+    fit(x, y) {
+        if (x.length < 5) return false;
+        this.forest = [];
+
+        for (let i = 0; i < this.numTrees; i++) {
+            const tree = new RaindropTree(3);
+            // Bootstrapping (with a bit of "rainy" randomness)
+            const indices = Array.from({ length: x.length }, () => Math.floor(Math.random() * x.length));
+            const bx = indices.map(idx => x[idx]);
+            const by = indices.map(idx => y[idx]);
+
+            tree.fit(bx, by);
+            this.forest.push(tree);
+        }
+        this.isTrained = true;
+        return true;
+    }
+
+    predict(val) {
+        if (!this.isTrained) return 0;
+        const predictions = this.forest.map(tree => tree.predict(val));
+        return predictions.reduce((a, b) => a + b, 0) / predictions.length;
+    }
+
+    calculateRMSE(x, y) {
+        if (!this.isTrained) return 100;
+        const se = x.map((val, i) => Math.pow(this.predict(val) - y[i], 2));
+        return Math.sqrt(se.reduce((a, b) => a + b, 0) / se.length);
+    }
+}
+
+/**
+ * Simple Linear Regression (Legacy Fallback)
  */
 class LinearRegression {
     constructor() {
@@ -14,40 +138,24 @@ class LinearRegression {
     }
 
     fit(x, y) {
-        if (x.length !== y.length || x.length < 2) {
-            return false;
-        }
-
+        if (x.length < 2) return false;
         const n = x.length;
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-
+        let sX = 0, sY = 0, sXY = 0, sXX = 0;
         for (let i = 0; i < n; i++) {
-            sumX += x[i];
-            sumY += y[i];
-            sumXY += x[i] * y[i];
-            sumXX += x[i] * x[i];
+            sX += x[i]; sY += y[i]; sXY += x[i] * y[i]; sXX += x[i] * x[i];
         }
-
-        const denominator = n * sumXX - sumX * sumX;
-        if (denominator === 0) {
-            this.slope = 0;
-            this.intercept = sumY / n;
+        const denom = n * sXX - sX * sX;
+        if (denom === 0) {
+            this.slope = 0; this.intercept = sY / n;
         } else {
-            this.slope = (n * sumXY - sumX * sumY) / denominator;
-            this.intercept = (sumY - this.slope * sumX) / n;
+            this.slope = (n * sXY - sX * sY) / denom;
+            this.intercept = (sY - this.slope * sX) / n;
         }
-
         this.trained = true;
         return true;
     }
 
-    predict(x) {
-        return this.slope * x + this.intercept;
-    }
-
-    getSlope() {
-        return this.slope;
-    }
+    predict(x) { return this.slope * x + this.intercept; }
 }
 
 /**
@@ -60,50 +168,32 @@ class EMA {
     }
 
     update(newValue) {
-        if (this.value === null) {
-            this.value = newValue;
-        } else {
-            this.value = this.alpha * newValue + (1 - this.alpha) * this.value;
-        }
-        return this.value;
-    }
-
-    get() {
+        if (this.value === null) this.value = newValue;
+        else this.value = this.alpha * newValue + (1 - this.alpha) * this.value;
         return this.value;
     }
 }
 
 /**
- * Main ML Predictor for Water System
+ * Main ML Predictor for Water System (Upgraded to Random Rain Forest)
  */
 class WaterPredictor {
     constructor(options = {}) {
-        this.historySize = options.historySize || 50;
+        this.historySize = options.historySize || 60;
         this.targetTDS = options.targetTDS || { min: 150, max: 300 };
-        this.optimalTDS = (this.targetTDS.min + this.targetTDS.max) / 2; // 225
+        this.optimalTDS = (this.targetTDS.min + this.targetTDS.max) / 2;
 
-        // History buffers for each tank
-        this.history = {
-            ro_reject: [],
-            rainwater: [],
-            blended: []
-        };
+        this.history = { ro_reject: [], rainwater: [], blended: [] };
 
-        // Regression models
-        this.tdsModel = new LinearRegression();
-        this.levelModel = new LinearRegression();
+        // Models
+        this.forest = new RandomRainForest(8);
+        this.fallbackModel = new LinearRegression();
 
-        // EMAs for smoothing
-        this.tdsEMA = new EMA(0.2);
-        this.levelEMA = new EMA(0.3);
+        this.tdsEMA = new EMA(0.15); // Slower smoothing for the forest output
     }
 
-    /**
-     * Add a reading to history
-     */
     addReading(tankType, reading) {
         const timestamp = Date.now();
-
         this.history[tankType].push({
             timestamp,
             tds: reading.tds,
@@ -112,316 +202,131 @@ class WaterPredictor {
             flowRate: reading.flowRate
         });
 
-        // Keep history bounded
         if (this.history[tankType].length > this.historySize) {
             this.history[tankType].shift();
         }
     }
 
-    /**
-     * Predict TDS after blending
-     */
     predictBlendedTDS(roTDS, rainTDS, blendRatio) {
-        const { ro, rain } = blendRatio;
-
-        // Basic mixing formula
-        const predictedTDS = roTDS * ro + rainTDS * rain;
-
-        // Apply smoothing
+        const predictedTDS = roTDS * blendRatio.ro + rainTDS * blendRatio.rain;
         const smoothedTDS = this.tdsEMA.update(predictedTDS);
 
         return {
             predicted: Math.round(predictedTDS * 10) / 10,
             smoothed: Math.round(smoothedTDS * 10) / 10,
-            confidence: this.calculateConfidence('tds')
+            confidence: this.calculateConfidence()
         };
     }
 
-    /**
-     * Predict future TDS based on trend
-     */
-    predictFutureTDS(tankType, stepsAhead = 10) {
+    predictFutureTDS(tankType, secondsAhead = 30) {
         const history = this.history[tankType];
-
-        if (history.length < 5) {
-            return {
-                predicted: null,
-                trend: 'insufficient_data',
-                confidence: 0
-            };
+        if (history.length < 10) {
+            return { predicted: null, trend: 'learning', confidence: 0.1 };
         }
 
-        // Extract time and TDS for regression
         const startTime = history[0].timestamp;
-        const x = history.map(h => (h.timestamp - startTime) / 1000); // seconds
+        const x = history.map(h => (h.timestamp - startTime) / 1000);
         const y = history.map(h => h.tds);
 
-        // Fit model
-        this.tdsModel.fit(x, y);
+        // Apply Storm Guard (Anomaly Detection)
+        const anomalies = StormGuard.detect(y);
+        const filteredX = x.filter((_, i) => !anomalies[i]);
+        const filteredY = y.filter((_, i) => !anomalies[i]);
 
-        // Predict future
-        const lastTime = x[x.length - 1];
-        const futureTime = lastTime + stepsAhead * 2; // 2 seconds per step
-        const predictedTDS = this.tdsModel.predict(futureTime);
+        if (filteredX.length < 5) return { predicted: y[y.length - 1], trend: 'unstable', confidence: 0.2 };
 
-        // Determine trend
-        const slope = this.tdsModel.getSlope();
+        // Fit Forest
+        this.forest.fit(filteredX, filteredY);
+        const lastX = x[x.length - 1];
+        const futureX = lastX + secondsAhead;
+        const predictedTDS = this.forest.predict(futureX);
+
+        // Fit Linear for Trend Direction
+        this.fallbackModel.fit(filteredX, filteredY);
+        const slope = this.fallbackModel.slope;
+
         let trend = 'stable';
-        if (slope > 0.5) trend = 'increasing';
-        else if (slope < -0.5) trend = 'decreasing';
+        if (slope > 0.3) trend = 'increasing';
+        else if (slope < -0.3) trend = 'decreasing';
+
+        // Calculate Confidence based on RMSE
+        const rmse = this.forest.calculateRMSE(filteredX, filteredY);
+        const confidence = Math.max(0.1, Math.min(0.95, 1 - (rmse / 100)));
 
         return {
             predicted: Math.round(predictedTDS * 10) / 10,
             trend,
-            slope: Math.round(slope * 100) / 100,
-            confidence: this.calculateConfidence('tds')
+            rmse: Math.round(rmse * 100) / 100,
+            confidence: Math.round(confidence * 100) / 100
         };
     }
 
-    /**
-     * Calculate time to reach target TDS
-     */
-    timeToTargetTDS(currentTDS, targetTDS, tdsChangeRate) {
-        if (tdsChangeRate === 0) {
-            return Infinity;
-        }
+    timeToTargetTDS(currentTDS, targetTDS, slope) {
+        if (Math.abs(slope) < 0.01) return Infinity;
+        const time = (targetTDS - currentTDS) / slope;
+        return time > 0 ? Math.round(time) : Infinity;
+    }
 
-        const tdsDifference = targetTDS - currentTDS;
-
-        // If already at target
-        if (Math.abs(tdsDifference) < 5) {
-            return 0;
-        }
-
-        // If moving in wrong direction
-        if ((tdsDifference > 0 && tdsChangeRate < 0) ||
-            (tdsDifference < 0 && tdsChangeRate > 0)) {
-            return Infinity;
-        }
-
-        // Time in seconds
-        const timeSeconds = Math.abs(tdsDifference / tdsChangeRate);
-
+    calculateOptimalBlendRatio(roTDS, rainTDS) {
+        const denom = roTDS - rainTDS;
+        if (denom === 0) return { ro: 0.5, rain: 0.5, achievable: false };
+        let ro = (this.optimalTDS - rainTDS) / denom;
+        ro = Math.max(0, Math.min(1, ro));
+        const achieved = roTDS * ro + rainTDS * (1 - ro);
         return {
-            seconds: Math.round(timeSeconds),
-            minutes: Math.round(timeSeconds / 60 * 10) / 10,
-            formatted: this.formatTime(timeSeconds)
+            ro: Math.round(ro * 100) / 100,
+            rain: Math.round((1 - ro) * 100) / 100,
+            achievedTDS: Math.round(achieved * 10) / 10,
+            achievable: Math.abs(achieved - this.optimalTDS) < 20
         };
     }
 
-    /**
-     * Calculate time to fill/empty tank
-     */
-    timeToFillOrEmpty(currentLevel, targetLevel, flowRate) {
-        if (flowRate === 0) {
-            return {
-                seconds: Infinity,
-                formatted: 'N/A - No flow'
-            };
-        }
-
-        // Assuming 750L capacity for blended tank
-        const capacity = 750;
-        const currentLiters = (currentLevel / 100) * capacity;
-        const targetLiters = (targetLevel / 100) * capacity;
-        const litersNeeded = Math.abs(targetLiters - currentLiters);
-
-        const timeMinutes = litersNeeded / flowRate;
-        const timeSeconds = timeMinutes * 60;
-
-        return {
-            seconds: Math.round(timeSeconds),
-            minutes: Math.round(timeMinutes * 10) / 10,
-            formatted: this.formatTime(timeSeconds),
-            litersNeeded: Math.round(litersNeeded * 10) / 10
-        };
-    }
-
-    /**
-     * Get optimal blend ratio for target TDS
-     */
-    calculateOptimalBlendRatio(roTDS, rainTDS, targetTDS = this.optimalTDS) {
-        // Solve: targetTDS = roTDS * ro + rainTDS * rain
-        // Constraint: ro + rain = 1
-        // Therefore: targetTDS = roTDS * ro + rainTDS * (1 - ro)
-        // Solving for ro: ro = (targetTDS - rainTDS) / (roTDS - rainTDS)
-
-        const denominator = roTDS - rainTDS;
-
-        if (denominator === 0) {
-            return { ro: 0.5, rain: 0.5, achievable: false };
-        }
-
-        let roRatio = (targetTDS - rainTDS) / denominator;
-
-        // Constrain to valid range
-        roRatio = Math.max(0, Math.min(1, roRatio));
-        const rainRatio = 1 - roRatio;
-
-        // Check if target is achievable
-        const achievedTDS = roTDS * roRatio + rainTDS * rainRatio;
-        const achievable = Math.abs(achievedTDS - targetTDS) < 10;
-
-        return {
-            ro: Math.round(roRatio * 100) / 100,
-            rain: Math.round(rainRatio * 100) / 100,
-            achievedTDS: Math.round(achievedTDS * 10) / 10,
-            achievable,
-            recommendation: this.getBlendRecommendation(roRatio)
-        };
-    }
-
-    /**
-     * Get full prediction report
-     */
     getPredictionReport(readings, blendRatio) {
-        const roReading = readings.ro_reject;
-        const rainReading = readings.rainwater;
-        const blendReading = readings.blended;
+        this.addReading('ro_reject', readings.ro_reject);
+        this.addReading('rainwater', readings.rainwater);
+        this.addReading('blended', readings.blended);
 
-        // Add readings to history
-        this.addReading('ro_reject', roReading);
-        this.addReading('rainwater', rainReading);
-        this.addReading('blended', blendReading);
-
-        // Get future TDS prediction
-        const futureTDS = this.predictFutureTDS('blended', 30);
-
-        // Calculate optimal blend
-        const optimalBlend = this.calculateOptimalBlendRatio(
-            roReading.tds,
-            rainReading.tds,
-            this.optimalTDS
-        );
-
-        // Time to optimal TDS
-        const tdsChangeRate = futureTDS.slope || 0;
-        const timeToOptimal = this.timeToTargetTDS(
-            blendReading.tds,
-            this.optimalTDS,
-            tdsChangeRate
-        );
-
-        // Time to fill blended tank
-        const timeToFull = this.timeToFillOrEmpty(
-            blendReading.level,
-            100,
-            blendReading.flowRate
-        );
-
-        // Water saving opportunity
-        const waterSaving = this.calculateWaterSaving(blendRatio, optimalBlend);
+        const futureTDS = this.predictFutureTDS('blended', 60);
+        const optimalBlend = this.calculateOptimalBlendRatio(readings.ro_reject.tds, readings.rainwater.tds);
 
         return {
             timestamp: new Date().toISOString(),
+            model: 'Random Rain Forest v1.0',
             currentState: {
-                blendedTDS: blendReading.tds,
-                blendedLevel: blendReading.level,
-                flowRate: blendReading.flowRate,
-                isOptimal: blendReading.tds >= this.targetTDS.min && blendReading.tds <= this.targetTDS.max
+                blendedTDS: readings.blended.tds,
+                isOptimal: readings.blended.tds >= this.targetTDS.min && readings.blended.tds <= this.targetTDS.max
             },
             predictions: {
                 futureTDS: futureTDS.predicted,
-                tdsTrend: futureTDS.trend,
-                confidence: futureTDS.confidence
-            },
-            timing: {
-                timeToOptimalTDS: timeToOptimal,
-                timeToTankFull: timeToFull
+                trend: futureTDS.trend,
+                confidence: futureTDS.confidence,
+                rmse: futureTDS.rmse
             },
             recommendations: {
-                optimalBlendRatio: optimalBlend,
-                currentBlendRatio: blendRatio,
-                adjustment: this.getAdjustmentAdvice(blendRatio, optimalBlend)
-            },
-            waterSaving
+                optimalBlend,
+                stormAlert: futureTDS.rmse > 20 ? 'High variance detected - sensor noise likely.' : 'Stable'
+            }
         };
     }
 
-    // ============================================
-    // HELPER METHODS
-    // ============================================
-
-    calculateConfidence(metric) {
-        const history = this.history.blended;
-
-        if (history.length < 10) return 0.3;
-        if (history.length < 20) return 0.5;
-        if (history.length < 30) return 0.7;
-        if (history.length < 40) return 0.85;
-        return 0.95;
+    calculateConfidence() {
+        const h = this.history.blended;
+        if (h.length < 10) return 0.2;
+        if (h.length < 30) return 0.5;
+        return 0.85;
     }
 
-    formatTime(seconds) {
-        if (!isFinite(seconds)) return 'N/A';
-
-        if (seconds < 60) {
-            return `${Math.round(seconds)}s`;
-        } else if (seconds < 3600) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.round(seconds % 60);
-            return `${mins}m ${secs}s`;
-        } else {
-            const hours = Math.floor(seconds / 3600);
-            const mins = Math.round((seconds % 3600) / 60);
-            return `${hours}h ${mins}m`;
-        }
-    }
-
-    getBlendRecommendation(roRatio) {
-        if (roRatio < 0.2) return 'Use mostly rainwater for lowest TDS';
-        if (roRatio < 0.4) return 'Good balance favoring rainwater';
-        if (roRatio < 0.6) return 'Balanced mix';
-        if (roRatio < 0.8) return 'Consider reducing RO reject usage';
-        return 'High RO reject usage - increase rainwater if available';
-    }
-
-    getAdjustmentAdvice(current, optimal) {
-        const roDiff = optimal.ro - current.ro;
-
-        if (Math.abs(roDiff) < 0.05) {
-            return 'Blend ratio is optimal';
-        } else if (roDiff > 0) {
-            return `Increase RO ratio by ${Math.round(roDiff * 100)}%`;
-        } else {
-            return `Decrease RO ratio by ${Math.round(Math.abs(roDiff) * 100)}%`;
-        }
-    }
-
-    calculateWaterSaving(currentRatio, optimalRatio) {
-        // More rainwater = more savings
-        const currentRainUsage = currentRatio.rain;
-        const optimalRainUsage = optimalRatio.rain;
-
-        const potentialSavings = (optimalRainUsage - currentRainUsage) * 100;
-
-        return {
-            currentRainwaterPercent: Math.round(currentRainUsage * 100),
-            optimalRainwaterPercent: Math.round(optimalRainUsage * 100),
-            potentialImprovementPercent: Math.round(potentialSavings),
-            isEcoFriendly: currentRainUsage >= 0.6
-        };
-    }
-
-    /**
-     * Reset predictor state
-     */
     reset() {
-        this.history = {
-            ro_reject: [],
-            rainwater: [],
-            blended: []
-        };
-        this.tdsModel = new LinearRegression();
-        this.levelModel = new LinearRegression();
-        this.tdsEMA = new EMA(0.2);
-        this.levelEMA = new EMA(0.3);
+        this.history = { ro_reject: [], rainwater: [], blended: [] };
+        this.forest = new RandomRainForest(8);
+        this.tdsEMA = new EMA(0.15);
     }
 }
 
+
 // Export for different environments
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { WaterPredictor, LinearRegression, EMA };
+    module.exports = { WaterPredictor, RandomRainForest, RaindropTree, LinearRegression, EMA, StormGuard };
 }
 
 if (typeof window !== 'undefined') {
