@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 const crypto = require('crypto');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const GitHubStrategy = require('passport-github2').Strategy;
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -100,32 +99,6 @@ if (process.env.GOOGLE_CLIENT_ID) {
     }));
 }
 
-// ─── Passport: GitHub OAuth ───────────────────────────────────────────────────
-if (process.env.GITHUB_CLIENT_ID) {
-    passport.use(new GitHubStrategy({
-        clientID: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.env.GITHUB_CALLBACK_URL || `${CLIENT_URL}/auth/github/callback`,
-        scope: ['user:email']
-    }, async (accessToken, refreshToken, profile, done) => {
-        try {
-            const email = profile.emails?.[0]?.value || `github_${profile.id}@l2c.local`;
-            let user = await User.findOne({ email });
-            if (!user) {
-                user = await User.create({
-                    firstName: profile.displayName?.split(' ')[0] || profile.username,
-                    lastName: profile.displayName?.split(' ')[1] || '',
-                    email,
-                    githubId: profile.id
-                });
-            } else if (!user.githubId) {
-                user.githubId = profile.id;
-                await user.save();
-            }
-            done(null, user);
-        } catch (err) { done(err); }
-    }));
-}
 
 // ─── Auth APIs: Email/Password ────────────────────────────────────────────────
 app.post('/api/auth/register', async (req, res) => {
@@ -335,18 +308,6 @@ app.get('/auth/google/callback',
     }
 );
 
-// ─── OAuth: GitHub ─────────────────────────────────────────────────────────────
-app.get('/auth/github',
-    passport.authenticate('github', { scope: ['user:email'], session: false })
-);
-
-app.get('/auth/github/callback',
-    passport.authenticate('github', { session: false, failureRedirect: '/login.html?error=github_failed' }),
-    (req, res) => {
-        const token = makeToken(req.user.email);
-        res.redirect(`/login.html?token=${token}&firstName=${encodeURIComponent(req.user.firstName)}&email=${encodeURIComponent(req.user.email)}`);
-    }
-);
 
 // ─── Profile APIs ─────────────────────────────────────────────────────────────
 app.get('/api/user/profile', authenticate, async (req, res) => {
