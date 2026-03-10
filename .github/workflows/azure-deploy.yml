@@ -34,15 +34,13 @@ jobs:
           containerAppName: l2c-app
           resourceGroup: l2c-resource-group
           imageToDeploy: ${{ secrets.ACR_NAME }}.azurecr.io/l2c-app:${{ github.sha }}
-          environmentVariables: |
+          environmentVariables: >
             MONGODB_URI=${{ secrets.MONGODB_URI }}
             SECRET_KEY=${{ secrets.SECRET_KEY }}
             CLIENT_URL=${{ secrets.CLIENT_URL }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }}
-            GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }}
-            GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }}
             EMAIL_USER=${{ secrets.EMAIL_USER }}
             EMAIL_PASS=${{ secrets.EMAIL_PASS }}
             TWILIO_SID=${{ secrets.TWILIO_SID }}
