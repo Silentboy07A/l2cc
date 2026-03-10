@@ -28,10 +28,18 @@ jobs:
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/l2c-app:${{ github.sha }}
 
       - name: Deploy to Azure Container Apps
-        uses: azure/container-apps-deploy-action@v1
-        with:
-          acrName: ${{ secrets.ACR_NAME }}
-          containerAppName: l2c-app
-          resourceGroup: l2c-resource-group
-          imageToDeploy: ${{ secrets.ACR_NAME }}.azurecr.io/l2c-app:${{ github.sha }}
-          environmentVariables: MONGODB_URI=${{ secrets.MONGODB_URI }} SECRET_KEY=${{ secrets.SECRET_KEY }} CLIENT_URL=${{ secrets.CLIENT_URL }} GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} GOOGLE_CALLBACK_URL=${{ secrets.GOOGLE_CALLBACK_URL }} TWILIO_SID=${{ secrets.TWILIO_SID }} TWILIO_AUTH_TOKEN=${{ secrets.TWILIO_AUTH_TOKEN }} TWILIO_PHONE=${{ secrets.TWILIO_PHONE }}
+        run: |
+          az containerapp update \
+            --name l2c-app \
+            --resource-group l2c-resource-group \
+            --image ${{ secrets.ACR_NAME }}.azurecr.io/l2c-app:${{ github.sha }} \
+            --set-env-vars \
+              MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+              SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+              CLIENT_URL="${{ secrets.CLIENT_URL }}" \
+              GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+              GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+              GOOGLE_CALLBACK_URL="${{ secrets.GOOGLE_CALLBACK_URL }}" \
+              TWILIO_SID="${{ secrets.TWILIO_SID }}" \
+              TWILIO_AUTH_TOKEN="${{ secrets.TWILIO_AUTH_TOKEN }}" \
+              TWILIO_PHONE="${{ secrets.TWILIO_PHONE }}"
