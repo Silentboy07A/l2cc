@@ -296,17 +296,23 @@ app.get('/api/auth/magic-verify', async (req, res) => {
 });
 
 // ─── OAuth: Google ─────────────────────────────────────────────────────────────
-app.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'], session: false })
-);
-
-app.get('/auth/google/callback',
-    passport.authenticate('google', { session: false, failureRedirect: '/login.html?error=google_failed' }),
-    (req, res) => {
-        const token = makeToken(req.user.email);
-        res.redirect(`/login.html?token=${token}&firstName=${encodeURIComponent(req.user.firstName)}&email=${encodeURIComponent(req.user.email)}`);
+app.get('/auth/google', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        console.error('Error: GOOGLE_CLIENT_ID is not configured in environment variables.');
+        return res.redirect('/login.html?error=google_not_configured');
     }
-);
+    passport.authenticate('google', { scope: ['profile', 'email'], session: false })(req, res, next);
+});
+
+app.get('/auth/google/callback', (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        return res.redirect('/login.html?error=google_not_configured');
+    }
+    passport.authenticate('google', { session: false, failureRedirect: '/login.html?error=google_failed' })(req, res, next);
+}, (req, res) => {
+    const token = makeToken(req.user.email);
+    res.redirect(`/login.html?token=${token}&firstName=${encodeURIComponent(req.user.firstName)}&email=${encodeURIComponent(req.user.email)}`);
+});
 
 
 // ─── Profile APIs ─────────────────────────────────────────────────────────────
