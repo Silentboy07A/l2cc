@@ -5,10 +5,12 @@ npm-debug.log
 .env
 Dockerfile
 .dockerignore
+LICENSE
 README.md
-prdcd.docx
-l2ctecstackk.docx
+*.docx
 output
 prdcd_extracted
-C:\Users\csbal\.gemini\antigravity\brain
-C:\Users\csbal\.gemini\antigravity\brain\*
+backup
+temp_status.txt
+.gemini
+cortex_*.txt
