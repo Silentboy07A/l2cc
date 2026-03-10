@@ -453,13 +453,9 @@ app.get('/api/restaurants', async (req, res) => {
     }
 });
 
-// Fallback to login.html for initial entry
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'l2c', 'login.html'));
-});
-
+// Fallback to index.html
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'l2c', 'login.html'));
+    res.sendFile(path.join(__dirname, 'l2c', 'index.html'));
 });
 
 app.listen(PORT, () => {

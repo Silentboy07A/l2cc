@@ -71,16 +71,76 @@ const L2C = {
         return data.user;
     },
 
+    updateProfile: async (data) => {
+        const token = localStorage.getItem('l2c_token');
+        const response = await fetch(`${L2C.API_URL}/api/user/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error('Failed to update profile');
+        const user = await response.json();
+        L2C.setLoggedInUser(user);
+        L2C.updateNavbar();
+        return user;
+    },
+
+    fetchOrders: async () => {
+        const token = localStorage.getItem('l2c_token');
+        const response = await fetch(`${L2C.API_URL}/api/orders`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch orders');
+        return await response.json();
+    },
+
+    placeOrder: async (orderData) => {
+        const token = localStorage.getItem('l2c_token');
+        const response = await fetch(`${L2C.API_URL}/api/orders`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(orderData)
+        });
+        if (!response.ok) throw new Error('Failed to place order');
+        return await response.json();
+    },
+
 
     // --- Favorites ---
-    getFavorites: () => JSON.parse(localStorage.getItem('l2c_favorites') || '[]'),
-    toggleFavorite: (restaurantId) => {
-        let favs = L2C.getFavorites();
-        const idx = favs.indexOf(restaurantId);
-        if (idx > -1) favs.splice(idx, 1);
-        else favs.push(restaurantId);
+    fetchFavorites: async () => {
+        const token = localStorage.getItem('l2c_token');
+        if (!token) return [];
+        const response = await fetch(`${L2C.API_URL}/api/user/favorites`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('Failed to fetch favorites');
+        const favs = await response.json();
         localStorage.setItem('l2c_favorites', JSON.stringify(favs));
-        return idx === -1; // returns true if added
+        return favs;
+    },
+
+    getFavorites: () => JSON.parse(localStorage.getItem('l2c_favorites') || '[]'),
+
+    toggleFavorite: async (restaurantId) => {
+        const token = localStorage.getItem('l2c_token');
+        const response = await fetch(`${L2C.API_URL}/api/user/favorites`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ restaurantId })
+        });
+        if (!response.ok) throw new Error('Failed to toggle favorite');
+        const favs = await response.json();
+        localStorage.setItem('l2c_favorites', JSON.stringify(favs));
+        return favs;
     },
 
     // --- Notifications ---
@@ -161,6 +221,9 @@ document.head.appendChild(style);
 // Auto-init for all pages
 document.addEventListener('DOMContentLoaded', async () => {
     await L2C.fetchRestaurants();
+    if (L2C.getLoggedInUser()) {
+        await L2C.fetchFavorites();
+    }
     L2C.updateNavbar();
     L2C.initNotificationListener();
 
