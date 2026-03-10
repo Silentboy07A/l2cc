@@ -98,9 +98,13 @@ app.get('/api/restaurants', async (req, res) => {
     }
 });
 
-// Fallback to index.html for SPA-like behavior
+// Fallback to login.html for initial entry
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'l2c', 'login.html'));
+});
+
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'l2c', 'index.html'));
+    res.sendFile(path.join(__dirname, 'l2c', 'login.html'));
 });
 
 app.listen(PORT, () => {
